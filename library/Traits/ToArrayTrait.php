@@ -36,7 +36,7 @@ trait ToArrayTrait
             if ($propertyType === null) {
                 $exportArray[$key] = $value;
             } elseif ($propertyType === 'ToOne') {
-                $exportArray[$key] = $value->__get('id');
+                $exportArray[$key] = $value !== null ? $value->__get('id') : null;
             }
 		}
 
