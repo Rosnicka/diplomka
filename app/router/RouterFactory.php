@@ -20,6 +20,7 @@ class RouterFactory
 		$router = new RouteList;
 		$router[] = new CrudRoute('api/v1/players', 'Player');
 		$router[] = new CrudRoute('api/v1/teams', 'Team');
+		$router[] = new CrudRoute('api/v1/fields', 'Field');
 		$router[] = new Route('/', [
 		    'presenter' => 'Homepage',
             'action' => 'default'

@@ -2,15 +2,16 @@
 
 namespace App\Presenters;
 
-use App\Model\Team\Team;
+use App\Model\Field\Field;
+use App\Model\Field\FieldFactory;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
 
 /**
- * Class TeamPresenter
+ * Class FieldPresenter
  * @package App\Presenters
  */
-class TeamPresenter extends ResourcePresenter
+class FieldPresenter extends ResourcePresenter
 {
     /** @var  EntityManager $doctrine
      * @inject
@@ -19,19 +20,19 @@ class TeamPresenter extends ResourcePresenter
 
     public function actionCreate()
     {
-        $data = $this->getInput()->getData();
-        $team = new Team();
-        $team->name = $data['name'];
-        $this->doctrine->persist($team);
+        $fieldFactory = new FieldFactory();
+        $field = $fieldFactory->createFromArray($this->getInput()->getData());
+
+        $this->doctrine->persist($field);
         $this->doctrine->flush();
 
-        $this->resource->data = $team;
+        $this->resource->data = $field;
     }
 
     public function actionRead()
     {
-        $teams = $this->doctrine->getRepository(Team::getClassName())->findAll();
-        $this->resource->data = $teams;
+        $fields = $this->doctrine->getRepository(Field::getClassName())->findAll();
+        $this->resource->data = $fields;
     }
 
     public function actionUpdate()

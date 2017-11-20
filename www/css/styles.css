@@ -1,0 +1,30 @@
+.game-detail__header {
+  text-align: center;
+  border: 1px solid #010c30;
+  border-radius: 5px; }
+
+.score-board__results {
+  font-size: 40px; }
+
+.score-board__team {
+  font-size: 28px; }
+  .score-board__team.score-board__team--home {
+    text-align: left; }
+  .score-board__team.score-board__team--visitors {
+    text-align: right; }
+  .score-board__team .score-board__local {
+    font-size: 16px; }
+
+.game-detail__team-roster {
+  margin: 5px 0; }
+
+.game-detail__player {
+  line-height: 40px;
+  border: 1px solid #010c30;
+  border-radius: 5px; }
+  .game-detail__player .actions {
+    text-align: right; }
+  .game-detail__player button {
+    margin: 0 3px; }
+
+/*# sourceMappingURL=styles.css.map */

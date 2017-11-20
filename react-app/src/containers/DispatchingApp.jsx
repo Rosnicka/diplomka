@@ -1,13 +1,61 @@
 import React, {Component} from 'react'
-import TeamForm from "../forms/TeamForm";
 import TeamRepository from "./teams/TeamRepository";
+import PlayerRepository from "./players/PlayerRepository";
+import FieldRepository from "./fields/FieldRepository";
+import GameRepository from "./games/GameRepository";
+import GameDetailRepository from "./game-detail/GameDetailRepository";
+import {fetchGet} from "../utils/FetchMethods";
+import {PLAYERS_URL} from "../constants/Routes";
 
 class DispatchingApp extends Component {
-    render(){
+    constructor(props) {
+        super(props);
+        this.state = {
+            homeTeam: {},
+            visitorsTeam: {},
+            homePlayers: [],
+            visitorsPlayers: []
+        }
+    }
+
+    componentDidMount() {
+        fetchGet(PLAYERS_URL).then((response) => {
+            response.json().then((data) => {
+                this.setState({homePlayers: data.data});
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+
+        fetchGet(PLAYERS_URL).then((response) => {
+            response.json().then((data) => {
+                this.setState({visitorsPlayers: data.data});
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+
+    render() {
+
+        const forms = (
+            <div>
+                <h1>Formuláře</h1>
+                <TeamRepository/>
+                <PlayerRepository/>
+                <FieldRepository/>
+                <GameRepository/>
+            </div>
+        )
+
         return (
             <div>
-                Hello world!
-                <TeamRepository/>
+                <GameDetailRepository homeTeam={this.state.homeTeam}
+                                      visitorsTeam={this.state.visitorsTeam}
+                                      homePlayers={this.state.homePlayers}
+                                      visitorsPlayers={this.state.visitorsPlayers}
+                />
             </div>
         )
     }

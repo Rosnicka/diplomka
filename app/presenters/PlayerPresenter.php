@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Model\Player\Player;
+use App\Model\Player\PlayerFactory;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
 
@@ -19,7 +20,13 @@ class PlayerPresenter extends ResourcePresenter
 
     public function actionCreate()
     {
-        $this->resource->action = 'Create';
+        $playerFactory = new PlayerFactory($this->doctrine);
+        $player = $playerFactory->createFromArray($this->getInput()->getData());
+
+        $this->doctrine->persist($player);
+        $this->doctrine->flush();
+
+        $this->resource->action = $player;
     }
 
     public function actionRead()
