@@ -20,6 +20,7 @@ extensions:
     annotations: Kdyby\Annotations\DI\AnnotationsExtension
     doctrine: Kdyby\Doctrine\DI\OrmExtension
     restful: Drahak\Restful\DI\RestfulExtension
+    doctrine2identity: Majkl578\NetteAddons\Doctrine2Identity\DI\IdentityExtension
 
 doctrine:
     user: root

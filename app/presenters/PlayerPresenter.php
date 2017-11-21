@@ -6,6 +6,7 @@ use App\Model\Player\Player;
 use App\Model\Player\PlayerFactory;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
+use Drahak\Restful\Application\UI\SecuredResourcePresenter;
 
 /**
  * Class PlayerPresenter

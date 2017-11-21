@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0c84df4b9e1b0b16a49a8b039bd95300",
-    "content-hash": "ec543526b5d76dd6e8c933b4383bff83",
+    "hash": "db96f1106096be3b07bbea914d8d6ad7",
+    "content-hash": "2b33ddea164bff41364b9fc949ce91a4",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1146,6 +1146,59 @@
                 "twig"
             ],
             "time": "2017-11-08 13:42:12"
+        },
+        {
+            "name": "majkl578/nette-identity-doctrine",
+            "version": "v2.3-rc1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Majkl578/nette-identity-doctrine.git",
+                "reference": "6d78821908dcf06e276b34eae7a3123d9fe1fb3a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Majkl578/nette-identity-doctrine/zipball/6d78821908dcf06e276b34eae7a3123d9fe1fb3a",
+                "reference": "6d78821908dcf06e276b34eae7a3123d9fe1fb3a",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "~2.3",
+                "nette/di": "~2.2",
+                "nette/http": "~2.2",
+                "nette/security": "~2.2",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "kdyby/doctrine": "~2.0",
+                "nette/bootstrap": "~2.2",
+                "phpunit/phpunit": "~4.8",
+                "tracy/tracy": "~2.2"
+            },
+            "type": "nette-addon",
+            "autoload": {
+                "psr-4": {
+                    "Majkl578\\NetteAddons\\Doctrine2Identity\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Moravec"
+                }
+            ],
+            "description": "Integration of entities implementing IIdentity in Nette 2",
+            "keywords": [
+                "Authentication",
+                "doctrine",
+                "identity",
+                "nette",
+                "orm",
+                "security"
+            ],
+            "time": "2015-11-27 13:47:40"
         },
         {
             "name": "nette/application",
@@ -2360,12 +2413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "f7f266a531fa0fd40253c4f6d87239f807c39a33"
+                "reference": "72b0921e1c59928b61be8b7a7a98ae5a4f2a02e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/f7f266a531fa0fd40253c4f6d87239f807c39a33",
-                "reference": "f7f266a531fa0fd40253c4f6d87239f807c39a33",
+                "url": "https://api.github.com/repos/symfony/console/zipball/72b0921e1c59928b61be8b7a7a98ae5a4f2a02e1",
+                "reference": "72b0921e1c59928b61be8b7a7a98ae5a4f2a02e1",
                 "shasum": ""
             },
             "require": {
@@ -2421,7 +2474,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-16 15:25:26"
+            "time": "2017-11-19 18:41:20"
         },
         {
             "name": "symfony/debug",
@@ -2429,12 +2482,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "24b7bbfc7c1aed6540f8d5dc7ff9bb8467ac9e32"
+                "reference": "d120b899c005a0aa58b5ea8c24f034f28bcb862a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/24b7bbfc7c1aed6540f8d5dc7ff9bb8467ac9e32",
-                "reference": "24b7bbfc7c1aed6540f8d5dc7ff9bb8467ac9e32",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/d120b899c005a0aa58b5ea8c24f034f28bcb862a",
+                "reference": "d120b899c005a0aa58b5ea8c24f034f28bcb862a",
                 "shasum": ""
             },
             "require": {
@@ -2477,7 +2530,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-11 15:39:06"
+            "time": "2017-11-19 20:09:36"
         },
         {
             "name": "symfony/polyfill-mbstring",

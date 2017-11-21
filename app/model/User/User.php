@@ -6,12 +6,13 @@ use App\Model\BaseEntity;
 use App\Model\Team\Team;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use Nette\Security\IIdentity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="email", columns={"email"})})
  */
-class User extends BaseEntity
+class User extends BaseEntity implements IIdentity
 {
     /**
      * @ORM\Column(type="string")
@@ -42,4 +43,11 @@ class User extends BaseEntity
      * @var Team
      */
     protected $team;
+
+    function getRoles()
+    {
+        return [];
+    }
+
+
 }
