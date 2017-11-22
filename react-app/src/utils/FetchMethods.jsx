@@ -1,6 +1,7 @@
 export const fetchGet = (url, params = null) => {
     return fetch(url, {
         method: 'GET',
+        credentials: 'include'
     });
 }
 

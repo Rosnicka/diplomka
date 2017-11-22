@@ -26,6 +26,21 @@ class RouterFactory
                 IResourceRouter::POST => 'login',
             ],
         ], IResourceRouter::POST);
+
+        $router[] = new ResourceRoute('api/v1/users/logged', [
+            'presenter' => 'Auth',
+            'action' => [
+                IResourceRouter::GET => 'logged',
+            ],
+        ], IResourceRouter::GET);
+
+        $router[] = new ResourceRoute('api/v1/users/logout', [
+            'presenter' => 'Auth',
+            'action' => [
+                IResourceRouter::GET => 'logout',
+            ],
+        ], IResourceRouter::GET);
+
         $router[] = new CrudRoute('api/v1/players', 'Player');
         $router[] = new CrudRoute('api/v1/teams', 'Team');
         $router[] = new CrudRoute('api/v1/fields', 'Field');

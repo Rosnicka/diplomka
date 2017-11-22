@@ -22,6 +22,7 @@ class AppAuthenticator implements \Nette\Security\IAuthenticator
     function authenticate(array $credentials)
     {
         list($username, $password) = $credentials;
+        /* @var User $row */
         $row = $this->entityManager->getRepository(User::getClassName())->findOneBy(['email =' => $username]);
 
         if (!$row) {
@@ -32,7 +33,10 @@ class AppAuthenticator implements \Nette\Security\IAuthenticator
             throw new AuthenticationException('Invalid password.');
         }
 
-        return new Identity($row->id, $row->roles, ['username' => $row->firstName . ' ' . $row->lastName]);
+        $userData = $row->toArray();
+        unset($userData['password']);
+
+        return new Identity($row->id, $row->roles, $userData);
     }
 
 }

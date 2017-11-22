@@ -25,13 +25,28 @@ class AuthPresenter extends ResourcePresenter
 
         try {
             $user->login($data['username'], $data['password']);
-            $this->resource->action = $user->getIdentity()->getId();
+
+            $this->resource->user = $user->getIdentity()->getData();
 
         } catch (AuthenticationException $e) {
-            $this->resource->action = false;
+            $this->resource->user = false;
         }
+    }
 
-        // Login
-        //$authenticator = new \App\Security\AppAuthenticator()
+    public function actionLogged()
+    {
+        $user = $this->getUser();
+        if ($user->isLoggedIn() && $userIdentity = $user->getIdentity()) {
+            $this->resource->user = $userIdentity->getData();
+        } else {
+            $this->resource->user = false;
+        }
+    }
+
+    public function actionLogout()
+    {
+        $user = $this->getUser();
+        $user->logout(true);
+        $this->resource->action = true;
     }
 }
