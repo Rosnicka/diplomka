@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import TeamRegistrationForm from "../../forms/TeamRegistrationForm";
 import {createTeam} from "../../actions/my-team/MyTeamActions";
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
+import {Jumbotron, Col, Row} from 'react-bootstrap'
 
 const mapStateToProps = (state) => {
     return {
@@ -28,9 +29,7 @@ const MyTeamHomePage = (props) => {
         } else {
             return (
                 <div>
-                    <h1>Team info</h1>
-                    <div>Název týmu: <b>{myTeam.name}</b></div>
-                    <div>Aktuální pozice v tabulce: 1.</div>
+                    <h2>{myTeam.name}</h2>
                 </div>
             )
         }
@@ -64,7 +63,9 @@ const MyTeamHomePage = (props) => {
     const getTeamSeasonRegistration = () => {
         if (myTeam.activeSeason === null) {
             return (
-                <div>Team season registration</div>
+                <div>
+                    Team season registration
+                </div>
             )
         } else {
             return ''
@@ -79,19 +80,18 @@ const MyTeamHomePage = (props) => {
                 </div>)
         } else {
             return (
-                <div>
+                <Jumbotron>
                     {getTeamInfo()}
                     {getTeamRegistration()}
                     {getTeamSeasonInfo()}
                     {getTeamSeasonRegistration()}
-                </div>
+                </Jumbotron>
             )
         }
     }
 
     return (
         <div>
-            Můj tým
             {getContent()}
         </div>
     );

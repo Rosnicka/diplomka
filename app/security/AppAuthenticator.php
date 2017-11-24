@@ -33,7 +33,7 @@ class AppAuthenticator implements \Nette\Security\IAuthenticator
             throw new AuthenticationException('Invalid password.');
         }
 
-        $userData = $row->toArray();
+        $userData = $row->toArray(true);
         unset($userData['password']);
 
         return new Identity($row->id, $row->roles, $userData);

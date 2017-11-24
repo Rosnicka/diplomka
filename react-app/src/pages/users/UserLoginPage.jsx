@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import LoginForm from "../../forms/LoginForm";
 import {loginUser} from "../../actions/users/UsersActions";
+import {Col, Row} from 'react-bootstrap'
 
 const mapStateToProps = (state) => {
     return {
@@ -21,10 +22,12 @@ const UserLoginPage = (props) => {
     const {onSubmitLoginForm} = props;
 
     return (
-        <div>
-            <h1>Login obrazovka</h1>
-            <LoginForm onSubmitLoginForm={onSubmitLoginForm}/>
-        </div>
+        <Col xs={8} xsOffset={2} className="user-login-page">
+            <h1>Přihlášení do aplikace</h1>
+            <Col xs={8} xsOffset={2}>
+                <LoginForm onSubmitLoginForm={onSubmitLoginForm}/>
+            </Col>
+        </Col>
     );
 }
 

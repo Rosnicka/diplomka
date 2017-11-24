@@ -2,13 +2,14 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import App from "./App";
+import { Nav, NavItem } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+
 
 import UserLoginPage from "../pages/users/UserLoginPage";
 import UserRegistrationPage from "../pages/users/UserRegistrationPage";
 import PlayerRepository from "./players/PlayerRepository";
 import TeamRepository from "./teams/TeamRepository";
-import NavLink from "react-router-dom/es/NavLink";
 import MyTeamHomePage from "../pages/my-team/MyTeamHomePage";
 import LoadingSpinner from "../components/utils/LoadingSpinner";
 
@@ -54,16 +55,22 @@ const RouterContainer = (props) => {
             return (
                 <BrowserRouter>
                     <div>
-                        <div className="navigation">
-                            <NavLink to="/">Můj tým</NavLink><br/>
-                            <NavLink to="/hraci">Hráči</NavLink><br/>
-                            <NavLink to="/tymy">Zápasy</NavLink><br/>
-                        </div>
+                        <Nav bsStyle="pills">
+                            <LinkContainer to="/">
+                                <NavItem eventKey={1}>Můj tým</NavItem>
+                            </LinkContainer>
+                            <LinkContainer to="/hraci">
+                                <NavItem eventKey={2}>Hráči</NavItem>
+                            </LinkContainer>
+                            <LinkContainer to="/zapasy">
+                                <NavItem eventKey={3}>Zápasy</NavItem>
+                            </LinkContainer>
+                        </Nav>
+
                         <Switch>
-                            <Route path="/muj-tym" component={MyTeamHomePage}/>
                             <Route path="/hraci" component={PlayerRepository}/>
                             <Route path="/tymy" component={TeamRepository}/>
-                            <Route path="/*" component={App}/>
+                            <Route path="/" component={MyTeamHomePage}/>
                         </Switch>
                     </div>
                 </BrowserRouter>

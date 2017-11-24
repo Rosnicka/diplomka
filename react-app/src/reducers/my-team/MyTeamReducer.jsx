@@ -10,7 +10,7 @@ const myTeam = (state = {}, action) => {
     }
 };
 
-const isFetchingTeam = (state = true, action) => {
+const isFetchingTeam = (state = false, action) => {
     switch (action.type) {
         case IS_FETCHING_TEAM:
             return action.isFetching;

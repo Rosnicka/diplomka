@@ -7,6 +7,10 @@ header {
   }
 }
 
+.main-navigation {
+  font-size: 22px;
+}
+
 .wrapper {
   width: 90%;
   padding: 20px 0;
@@ -25,7 +29,9 @@ header {
 body {
   background: darkgrey;
   position: relative;
+  height: 100%;
 }
 
 @import "components/game-detail";
+@import "components/user_login-page";
 @import "utils/spinner";

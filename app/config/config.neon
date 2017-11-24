@@ -9,6 +9,7 @@ application:
 
 session:
 	expiration: 14 days
+	savePath: "%tempDir%/sessions"
 
 
 services:
@@ -23,9 +24,13 @@ extensions:
     doctrine2identity: Majkl578\NetteAddons\Doctrine2Identity\DI\IdentityExtension
 
 doctrine:
-    user: root
-    password:
-    dbname: diplomka_nette
+#	host: c108um.forpsi.com
+#	user: f97388
+#	password: fEmAT3n
+#	dbname: f97388
+	user: root
+	password:
+	dbname: diplomka_nette
 
 restful:
     convention: 'snake_case'

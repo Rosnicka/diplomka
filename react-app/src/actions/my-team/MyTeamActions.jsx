@@ -10,7 +10,7 @@ const receiveMyTeam = team => {
     }
 }
 
-const isFetchingTeam = (isFetching) => {
+export const isFetchingTeam = (isFetching) => {
     return {
         type: IS_FETCHING_TEAM,
         isFetching: isFetching,
@@ -34,7 +34,7 @@ export const getMyTeam = (teamId) => dispatch => {
 
 export const createTeam = (values) => dispatch => {
     const state = store.getState();
-    values.administrator = [state.userIdentity.id]
+    values.administrator = state.users.userIdentity.id
     fetchPost(TEAMS_URL, values).then((response) => {
         response.json().then((data) => {
             let team = {};

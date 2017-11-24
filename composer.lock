@@ -537,12 +537,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "049470c787467e2c7f5a267b8b86c5a5d28498fc"
+                "reference": "c811c3ac8486c2a16626e04cc85dde31cab1db57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/049470c787467e2c7f5a267b8b86c5a5d28498fc",
-                "reference": "049470c787467e2c7f5a267b8b86c5a5d28498fc",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/c811c3ac8486c2a16626e04cc85dde31cab1db57",
+                "reference": "c811c3ac8486c2a16626e04cc85dde31cab1db57",
                 "shasum": ""
             },
             "require": {
@@ -605,7 +605,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2017-11-12 11:25:46"
+            "time": "2017-11-24 01:43:33"
         },
         {
             "name": "drahak/restful",
@@ -2482,12 +2482,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "d120b899c005a0aa58b5ea8c24f034f28bcb862a"
+                "reference": "fb2001e5d85f95d8b6ab94ae3be5d2672df128fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/d120b899c005a0aa58b5ea8c24f034f28bcb862a",
-                "reference": "d120b899c005a0aa58b5ea8c24f034f28bcb862a",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/fb2001e5d85f95d8b6ab94ae3be5d2672df128fd",
+                "reference": "fb2001e5d85f95d8b6ab94ae3be5d2672df128fd",
                 "shasum": ""
             },
             "require": {
@@ -2530,7 +2530,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2017-11-19 20:09:36"
+            "time": "2017-11-21 09:01:46"
         },
         {
             "name": "symfony/polyfill-mbstring",

@@ -9,10 +9,14 @@ class LoginForm extends Component {
             <Form onSubmit={(values) => onSubmitLoginForm(values)}>
                 {formApi => (
                     <form onSubmit={formApi.submitForm} id="login-form">
-                        <label htmlFor="username">Přihlašovací email</label>
-                        <Text field="username" id="username"/>
-                        <label htmlFor="password">Heslo</label>
-                        <Text field="password" id="password" type="password"/>
+                        <div className="form-group">
+                            <label htmlFor="username">Přihlašovací email</label>
+                            <Text className="form-control" field="username" id="username"/>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="password">Heslo</label>
+                            <Text className="form-control" field="password" id="password" type="password"/>
+                        </div>
                         <button type="submit" className="btn btn-primary">Přihlásit se</button>
                     </form>
                 )}

@@ -1,7 +1,7 @@
 import {IS_FETCHING_USER, RECEIVE_LOGGED_USER} from "../../constants/UserActionTypes";
 import {fetchGet, fetchPost} from "../../utils/FetchMethods";
 import {LOGGED_USER_URL, LOGIN_USER_URL} from "../../constants/Routes";
-import {getMyTeam} from "../my-team/MyTeamActions";
+import {getMyTeam, isFetchingTeam} from "../my-team/MyTeamActions";
 
 const receiveLoggedUser = user => {
     return {
@@ -23,7 +23,8 @@ export const getLoggedUser = () => dispatch => {
             let user = {};
             if (data.user !== false) {
                 user = data.user;
-                if (user.team !== null) {
+                if (user.team !== undefined && user.team !== null) {
+                    dispatch(isFetchingTeam(true));
                     dispatch(getMyTeam(user.team));
                 }
             }
