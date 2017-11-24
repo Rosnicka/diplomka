@@ -3,6 +3,8 @@
 namespace App\Model\Field;
 
 use App\Model\BaseEntity;
+use App\Model\FieldInApplication\FieldInApplication;
+use App\Model\FieldLocation\FieldLocation;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,6 +12,18 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Field extends BaseEntity
 {
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Model\FieldLocation\FieldLocation", inversedBy="fields")
+     * @var FieldLocation
+     */
+    protected $fieldLocation;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Model\FieldInApplication\FieldInApplication", mappedBy="field")
+     * @var ArrayCollection|FieldInApplication[]
+     */
+    protected $applicationMemberships;
+
     /**
      * @ORM\Column(type="string")
      * @var string

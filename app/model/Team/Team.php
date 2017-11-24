@@ -2,9 +2,11 @@
 
 namespace App\Model\Team;
 
+use App\Model\Application\Application;
 use App\Model\BaseEntity;
 use App\Model\Player\Player;
 use App\Model\TeamInGame\TeamInGame;
+use App\Model\TeamInGroup\TeamInGroup;
 use App\Model\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,6 +27,18 @@ class Team extends BaseEntity
      * @var ArrayCollection|TeamInGame[]
      */
     protected $gameMemberships;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Model\TeamInGroup\TeamInGroup", mappedBy="team")
+     * @var ArrayCollection|TeamInGroup[]
+     */
+    protected $groupMemberships;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Model\Application\Application", mappedBy="team")
+     * @var ArrayCollection|Application[]
+     */
+    protected $applications;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Model\User\User", mappedBy="team")

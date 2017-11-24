@@ -11,6 +11,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Competition extends BaseEntity
 {
     /**
+     * @ORM\OneToMany(targetEntity="App\Model\League\League", mappedBy="competition")
+     * @var League
+     */
+    protected $leagues;
+
+    /**
      * @ORM\Column(type="string")
      * @var string
      */
