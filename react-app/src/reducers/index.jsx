@@ -1,8 +1,10 @@
 import {combineReducers} from 'redux';
-import userIdentity from './../reducers/users/UserIdentityReducer'
+import users from './../reducers/users/UserIdentityReducer'
+import myTeam from './../reducers/my-team/MyTeamReducer'
 
 const dispatchingApp = combineReducers({
-    userIdentity
+    users,
+    myTeam
 });
 
 export default dispatchingApp;

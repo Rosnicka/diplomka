@@ -27,13 +27,23 @@ class PlayerPresenter extends ResourcePresenter
         $this->doctrine->persist($player);
         $this->doctrine->flush();
 
-        $this->resource->action = $player;
+        $this->resource->data = $player;
     }
 
+    /**
+     * @GET <module>/player
+     */
     public function actionRead()
     {
-        $players = $this->doctrine->getRepository(Player::getClassName())->findAll();
-        $this->resource->data = $players;
+        $id = $this->getParameter('id');
+
+        if ($id !== null) {
+            $player = $this->doctrine->getRepository(Player::getClassName())->find($id);
+            $this->resource->data = $player;
+        } else {
+            $players = $this->doctrine->getRepository(Player::getClassName())->findAll();
+            $this->resource->data = $players;
+        }
     }
 
     public function actionUpdate()

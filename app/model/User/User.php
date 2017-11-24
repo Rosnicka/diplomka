@@ -39,7 +39,7 @@ class User extends BaseEntity implements IIdentity
     protected $lastName;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Model\Team\Team", mappedBy="administrator")
+     * @ORM\ManyToOne(targetEntity="App\Model\Team\Team", inversedBy="administrators")
      * @var Team
      */
     protected $team;

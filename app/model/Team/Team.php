@@ -27,10 +27,10 @@ class Team extends BaseEntity
     protected $gameMemberships;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Model\User\User", inversedBy="team")
+     * @ORM\OneToMany(targetEntity="App\Model\User\User", mappedBy="team")
      * @var User
      */
-    protected $administrator;
+    protected $administrators;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Model\Player\Player", mappedBy="team")

@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Model\User\User;
 use App\Security\AppAuthenticator;
 use Doctrine\ORM\EntityManager;
 use \Drahak\Restful\Application\UI\ResourcePresenter;
@@ -36,8 +37,16 @@ class AuthPresenter extends ResourcePresenter
     public function actionLogged()
     {
         $user = $this->getUser();
-        if ($user->isLoggedIn() && $userIdentity = $user->getIdentity()) {
-            $this->resource->user = $userIdentity->getData();
+        if ($user->isLoggedIn()) {
+            /** @var User $user */
+            $user = $this->doctrine->getRepository(User::getClassName())->find($user->getId());
+            if ($user !== null) {
+                $userData = $user->toArray(true);
+                unset($userData['password']);
+                $this->resource->user = $userData;
+            } else {
+                $this->resource->user = false;
+            }
         } else {
             $this->resource->user = false;
         }

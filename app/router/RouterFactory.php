@@ -41,8 +41,8 @@ class RouterFactory
             ],
         ], IResourceRouter::GET);
 
-        $router[] = new CrudRoute('api/v1/players', 'Player');
-        $router[] = new CrudRoute('api/v1/teams', 'Team');
+        $router[] = new CrudRoute('api/v1/players/[<id>]', 'Player');
+        $router[] = new CrudRoute('api/v1/teams/[<id>]', 'Team');
         $router[] = new CrudRoute('api/v1/fields', 'Field');
 
         foreach (ReactAppRoutes::getRoutes() as $mask) {

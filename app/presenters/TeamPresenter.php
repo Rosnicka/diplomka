@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Model\Team\Team;
+use App\Model\User\User;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
 
@@ -22,7 +23,17 @@ class TeamPresenter extends ResourcePresenter
         $data = $this->getInput()->getData();
         $team = new Team();
         $team->name = $data['name'];
+
         $this->doctrine->persist($team);
+        $this->doctrine->flush();
+
+        $administrator = $this->doctrine->getRepository(User::getClassName())->find($data['administrator']);
+        if ($administrator === null) {
+            $this->resource->data = false;
+            $this->sendResource();
+        }
+        $administrator->team = $team;
+        $this->doctrine->persist($administrator);
         $this->doctrine->flush();
 
         $this->resource->data = $team;
@@ -30,8 +41,15 @@ class TeamPresenter extends ResourcePresenter
 
     public function actionRead()
     {
-        $teams = $this->doctrine->getRepository(Team::getClassName())->findAll();
-        $this->resource->data = $teams;
+        $id = $this->getParameter('id');
+
+        if ($id !== null) {
+            $team = $this->doctrine->getRepository(Team::getClassName())->find($id);
+            $this->resource->data = $team;
+        } else {
+            $teams = $this->doctrine->getRepository(Team::getClassName())->findAll();
+            $this->resource->data = $teams;
+        }
     }
 
     public function actionUpdate()

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import TeamForm from "../../forms/TeamForm";
+import TeamForm from "../../forms/TeamRegistrationForm";
 import {TEAMS_URL} from "../../constants/Routes";
 import {fetchPost} from "../../utils/FetchMethods";
 

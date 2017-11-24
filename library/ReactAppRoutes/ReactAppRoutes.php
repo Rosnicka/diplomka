@@ -7,6 +7,8 @@ class ReactAppRoutes
     const HOMEPAGE = '/';
     const LOGIN = '/prihlaseni';
     const REGISTER = '/registrace';
+
+    const MY_TEAM_HOME = '/muj-tym';
     const PLAYERS = '/hraci';
     const TEAMS = '/tymy';
 
@@ -18,6 +20,7 @@ class ReactAppRoutes
             self::REGISTER,
             self::PLAYERS,
             self::TEAMS,
+            self::MY_TEAM_HOME,
         ];
     }
 }

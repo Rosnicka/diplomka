@@ -1,6 +1,7 @@
-import {RECEIVE_LOGGED_USER} from "../../constants/UserActionTypes";
+import {combineReducers} from 'redux'
+import {IS_FETCHING_USER, RECEIVE_LOGGED_USER} from "../../constants/UserActionTypes";
 
-const userIdentityReducer = (state = {}, action) => {
+const userIdentity = (state = {}, action) => {
     switch (action.type) {
         case RECEIVE_LOGGED_USER:
             return action.user;
@@ -9,4 +10,18 @@ const userIdentityReducer = (state = {}, action) => {
     }
 };
 
-export default userIdentityReducer;
+const isFetchingUser = (state = true, action) => {
+    switch (action.type) {
+        case IS_FETCHING_USER:
+            return action.isFetching;
+        default:
+            return state;
+    }
+}
+
+const usersReducer = combineReducers({
+    userIdentity,
+    isFetchingUser
+})
+
+export default usersReducer;

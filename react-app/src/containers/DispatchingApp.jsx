@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
+import {Col} from 'react-bootstrap'
 import {createStore, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
 import reducer from '../reducers/index';
 
-import {getLoggedUser} from "../actions/UsersActions";
+import {getLoggedUser} from "../actions/users/UsersActions";
 import RouterContainer from "../containers/RouterContainer"
 
 const middleware = [thunk];
@@ -19,10 +20,12 @@ class DispatchingApp extends Component {
             <Provider store={store}>
                 <div className="wrapper">
                     <header>
-                        <h1>Informační systém pro soutěže v malé kopané</h1>
+                        <div className="title">Informační systém pro soutěže v malé kopané</div>
                         <img src="/images/logo_makop.png"/>
                     </header>
-                    <RouterContainer/>
+                    <Col xs={12}>
+                        <RouterContainer/>
+                    </Col>
                 </div>
             </Provider>
         )

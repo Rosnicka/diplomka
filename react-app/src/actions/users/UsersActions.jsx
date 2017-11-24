@@ -1,11 +1,19 @@
-import {RECEIVE_LOGGED_USER} from "../constants/UserActionTypes";
-import {fetchGet, fetchPost} from "../utils/FetchMethods";
-import {LOGGED_USER_URL, LOGIN_USER_URL} from "../constants/Routes";
+import {IS_FETCHING_USER, RECEIVE_LOGGED_USER} from "../../constants/UserActionTypes";
+import {fetchGet, fetchPost} from "../../utils/FetchMethods";
+import {LOGGED_USER_URL, LOGIN_USER_URL} from "../../constants/Routes";
+import {getMyTeam} from "../my-team/MyTeamActions";
 
 const receiveLoggedUser = user => {
     return {
         type: RECEIVE_LOGGED_USER,
         user: user
+    }
+}
+
+const isFetchingUser = (isFetching) => {
+    return {
+        type: IS_FETCHING_USER,
+        isFetching: isFetching,
     }
 }
 
@@ -15,8 +23,13 @@ export const getLoggedUser = () => dispatch => {
             let user = {};
             if (data.user !== false) {
                 user = data.user;
+                if (user.team !== null) {
+                    dispatch(getMyTeam(user.team));
+                }
             }
-            dispatch(receiveLoggedUser(user))
+            dispatch(receiveLoggedUser(user));
+            dispatch(isFetchingUser(false));
+
         });
     }).catch(function (error) {
         console.log(error);

@@ -1,6 +1,10 @@
 header {
   text-align: center;
   margin-bottom: 20px;
+
+  .title {
+    font-size: 40px;
+  }
 }
 
 .wrapper {
@@ -24,3 +28,4 @@ body {
 }
 
 @import "components/game-detail";
+@import "utils/spinner";
