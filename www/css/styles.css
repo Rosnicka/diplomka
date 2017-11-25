@@ -53,10 +53,200 @@ body {
   .game-detail__player button {
     margin: 0 3px; }
 
+#team-application-form h3 {
+  margin-bottom: 30px; }
+#team-application-form .form-group {
+  min-height: 80px; }
+  #team-application-form .form-group .label {
+    font-size: 1em; }
+
 .user-login-page {
   text-align: center; }
   .user-login-page input {
     text-align: center; }
+
+/* ----------------- Variables -------------------- */
+/* ----------------- Input styles ----------------- */
+.react-form-input {
+  border-color: #7B7B7B;
+  border-width: 1px; }
+
+.react-form-input-error {
+  border-color: #C32128;
+  border-width: 2px; }
+
+.react-form-input-warning {
+  border-color: #AD611C;
+  border-width: 2px; }
+
+/* ----------------- Message styles ----------------- */
+.react-form-message {
+  margin-bottom: 1rem;
+  padding: 5px;
+  display: block; }
+
+.react-form-message-error {
+  color: #C32128; }
+
+.react-form-message-warning {
+  color: #AD611C; }
+
+.react-form-message-success {
+  color: #52712D; }
+
+/* ----------------- Text styles ----------------- */
+/* ----------------- TextArea styles ----------------- */
+/* ----------------- Radio styles ----------------- */
+.react-form-radio-error {
+  background: #FEECED !important;
+  border-color: #C32128 !important; }
+
+.react-form-radio-warning {
+  background: #F9DFC3 !important;
+  border-color: #AD611C !important; }
+
+/* ----------------- Checkbox styles ----------------- */
+.react-form-checkbox-error {
+  background: #FEECED !important;
+  border-color: #C32128 !important; }
+
+.react-form-checkbox-warning {
+  background: #F9DFC3 !important;
+  border-color: #AD611C !important; }
+
+/* ----------------- Control ----------------- */
+/* Control */
+.react-form-control {
+  position: relative;
+  margin-bottom: 15px;
+  padding-left: 30px;
+  cursor: pointer; }
+
+/* Hides control inputs */
+.react-form-control input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0; }
+
+/* ----------------- Control Indicator ----------------- */
+/* Control indicator */
+.react-form-control-indicator {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  background: #E6E6E6;
+  border: solid;
+  border-color: #7B7B7B;
+  border-width: 1px; }
+
+/* Hover and focus states */
+.react-form-control:hover input ~ .react-form-control-indicator,
+.react-form-control input:focus ~ .react-form-control-indicator {
+  background: #CCC; }
+
+/* Checked state */
+.react-form-control input:checked ~ .react-form-control-indicator {
+  background: #2AA1C0; }
+
+/* Hover state whilst checked */
+.react-form-control:hover input:not([disabled]):checked ~ .react-form-control-indicator,
+.react-form-control input:checked:focus ~ .react-form-control-indicator {
+  background: #0E647D; }
+
+/* Disabled state */
+.react-form-control input:disabled ~ .react-form-control-indicator {
+  pointer-events: none;
+  opacity: .6;
+  background: #E6E6E6; }
+
+/* ----------------- Radio Control ----------------- */
+/* Radio button */
+.react-form-control-radio .react-form-control-indicator {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px; }
+
+/* Radio button inner circle */
+.react-form-control-radio .react-form-control-indicator:after {
+  top: 6px;
+  left: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FFF; }
+
+/* Disabled circle colour */
+.react-form-control-radio input:disabled ~ .react-form-control-indicator:after {
+  background: #7B7B7B; }
+
+/* ----------------- Checkbox Control ----------------- */
+/* Checkbox */
+.react-form-control-checkbox .react-form-control-indicator {
+  width: 18px;
+  height: 18px; }
+
+/* Check mark */
+.react-form-control-indicator:after {
+  position: absolute;
+  display: none;
+  content: ''; }
+
+/* Show check mark */
+.react-form-control input:checked ~ .react-form-control-indicator:after {
+  display: block; }
+
+/* Checkbox tick */
+.react-form-control-checkbox .react-form-control-indicator:after {
+  top: 4px;
+  left: 7px;
+  width: 3px;
+  height: 8px;
+  transform: rotate(45deg);
+  border: solid #FFF;
+  border-width: 0 2px 2px 0; }
+
+/* Disabled tick colour */
+.react-form-control-checkbox input:disabled ~ .react-form-control-indicator:after {
+  border-color: #7B7B7B; }
+
+/* ----------------- Select ----------------- */
+.react-form-select select {
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #FFF;
+  background-image: none;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; }
+
+.react-form-select select::-ms-expand {
+  display: none; }
+
+.react-form-select select:hover,
+.react-form-select select:focus {
+  color: #000;
+  background: #fff; }
+
+.react-form-select select:disabled {
+  pointer-events: none;
+  opacity: .5; }
+
+.react-form-select-error select {
+  border-color: #C32128;
+  background: #FEECED; }
+
+.react-form-select-warning select {
+  border-color: #AD611C;
+  background: #F9DFC3; }
 
 .loading-spinner {
   padding: 10px; }

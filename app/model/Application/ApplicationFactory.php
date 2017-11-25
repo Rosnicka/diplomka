@@ -71,7 +71,7 @@ class ApplicationFactory
 
         $fieldMemberships = [];
         foreach ($values['fieldMemberships'] as $fieldMembership) {
-            if (!isset($fieldMembership['field']) || !isset($fieldMembership['rank'])) {
+            if (!isset($fieldMembership['field'])) {
                 throw new MissingArrayKeyException();
             }
             $field = $fieldRepository->find($fieldMembership['field']);
@@ -81,7 +81,6 @@ class ApplicationFactory
             $newFieldMembership = new FieldInApplication();
             $newFieldMembership->field = $field;
             $newFieldMembership->application = $application;
-            $newFieldMembership->rank = $fieldMembership['rank'];
 
             $fieldMemberships[] = $newFieldMembership;
         }
@@ -106,7 +105,7 @@ class ApplicationFactory
 
         $fieldLocationMemberships = [];
         foreach ($values['fieldLocationMemberships'] as $fieldLocationMembership) {
-            if (!isset($fieldLocationMembership['fieldLocation']) || !isset($fieldLocationMembership['rank'])) {
+            if (!isset($fieldLocationMembership['fieldLocation'])) {
                 throw new MissingArrayKeyException();
             }
             $fieldLocation = $fieldLocationRepository->find($fieldLocationMembership['fieldLocation']);
@@ -116,7 +115,6 @@ class ApplicationFactory
             $newFieldLocationMembership = new FieldLocationInApplication();
             $newFieldLocationMembership->fieldLocation = $fieldLocation;
             $newFieldLocationMembership->application = $application;
-            $newFieldLocationMembership->rank = $fieldLocationMembership['rank'];
 
             $fieldLocationMemberships[] = $newFieldLocationMembership;
         }

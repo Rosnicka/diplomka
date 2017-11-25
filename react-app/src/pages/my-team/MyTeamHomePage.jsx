@@ -1,27 +1,33 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import TeamRegistrationForm from "../../forms/TeamRegistrationForm";
-import {createTeam} from "../../actions/my-team/MyTeamActions";
+import {createTeam, createTeamApplication} from "../../actions/my-team/MyTeamActions";
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import {Jumbotron, Col, Row} from 'react-bootstrap'
+import TeamApplicationForm from "../../forms/TeamApplicationForm";
 
 const mapStateToProps = (state) => {
     return {
         myTeam: state.myTeam.myTeam,
-        isFetchingTeam: state.myTeam.isFetchingTeam
+        isFetchingTeam: state.myTeam.isFetchingTeam,
+        fields: state.data.fields,
+        fieldLocations: state.data.fieldLocations
     }
 };
 
-const mapDispatchToProps = (dispatch, state) => {
+const mapDispatchToProps = (dispatch) => {
     return {
         onSubmitTeamRegistrationForm: values => {
             dispatch(createTeam(values))
         },
+        onSubmitTeamApplicationForm: values => {
+            dispatch(createTeamApplication(values))
+        }
     };
 };
 
 const MyTeamHomePage = (props) => {
-    const {myTeam, onSubmitTeamRegistrationForm, isFetchingTeam} = props;
+    const {myTeam, onSubmitTeamRegistrationForm, onSubmitTeamApplicationForm, isFetchingTeam, fields, fieldLocations} = props;
 
     const getTeamInfo = () => {
         if (myTeam.id === undefined) {
@@ -40,7 +46,7 @@ const MyTeamHomePage = (props) => {
             return (
                 <div>
                     Ještě nemáš tým?
-                    <TeamRegistrationForm onSubmit={onSubmitTeamRegistrationForm}/>
+                    <TeamRegistrationForm onSubmit={onSubmitTeamRegistrationForm} />
                 </div>
             )
         } else {
@@ -61,10 +67,11 @@ const MyTeamHomePage = (props) => {
     }
 
     const getTeamSeasonRegistration = () => {
-        if (myTeam.activeSeason === null) {
+        // if (myTeam.activeSeason === null) {
+        if (true) {
             return (
                 <div>
-                    Team season registration
+                    <TeamApplicationForm onSubmit={onSubmitTeamApplicationForm} fields={fields} fieldLocations={fieldLocations} myTeamId={myTeam.id}/>
                 </div>
             )
         } else {

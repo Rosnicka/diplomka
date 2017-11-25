@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import {IS_FETCHING_TEAM, RECEIVE_MY_TEAM} from "../../constants/MyTeamActionTypes";
+import {IS_FETCHING_TEAM, RECEIVE_MY_TEAM, RECEIVE_MY_TEAM_APPLICATION} from "../../constants/MyTeamActionTypes";
 
 const myTeam = (state = {}, action) => {
     switch (action.type) {
@@ -9,6 +9,15 @@ const myTeam = (state = {}, action) => {
             return state;
     }
 };
+
+const myTeamApplication = (state = {}, action) => {
+    switch (action.type) {
+        case RECEIVE_MY_TEAM_APPLICATION:
+            return action.application;
+        default:
+            return state;
+    }
+}
 
 const isFetchingTeam = (state = false, action) => {
     switch (action.type) {
@@ -21,7 +30,8 @@ const isFetchingTeam = (state = false, action) => {
 
 const myTeamReducer = combineReducers({
     myTeam,
-    isFetchingTeam
+    isFetchingTeam,
+    myTeamApplication
 });
 
 export default myTeamReducer;

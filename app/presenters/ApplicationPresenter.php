@@ -22,7 +22,7 @@ class ApplicationPresenter extends ResourcePresenter
         $applicationFactory = new ApplicationFactory($this->doctrine);
         $application = $applicationFactory->createApplication($this->getInput()->getData());
 
-        $this->resource->action = $application;
+        $this->resource->data = $application;
     }
 
     public function actionRead()

@@ -1,5 +1,5 @@
-import {IS_FETCHING_TEAM, RECEIVE_MY_TEAM} from "../../constants/MyTeamActionTypes";
-import {getTeamByIdUrl, TEAMS_URL} from "../../constants/Routes";
+import {IS_FETCHING_TEAM, RECEIVE_MY_TEAM, RECEIVE_MY_TEAM_APPLICATION} from "../../constants/MyTeamActionTypes";
+import {APPLICATIONS_URL, getTeamByIdUrl, TEAMS_URL} from "../../constants/Routes";
 import {fetchPost, fetchGet} from "../../utils/FetchMethods";
 import {store} from "../../containers/DispatchingApp";
 
@@ -7,6 +7,13 @@ const receiveMyTeam = team => {
     return {
         type: RECEIVE_MY_TEAM,
         team: team
+    }
+}
+
+const receiveMyTeamApplication = application => {
+    return {
+        type: RECEIVE_MY_TEAM_APPLICATION,
+        application: application
     }
 }
 
@@ -42,6 +49,20 @@ export const createTeam = (values) => dispatch => {
                 team = data.data;
             }
             dispatch(receiveMyTeam(team))
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const createTeamApplication = (values) => dispatch => {
+    fetchPost(APPLICATIONS_URL, values).then((response) => {
+        response.json().then((data) => {
+            let application = {};
+            if (data.data !== false) {
+                application = data.data;
+            }
+            dispatch(receiveMyTeamApplication(application))
         });
     }).catch(function (error) {
         console.log(error);

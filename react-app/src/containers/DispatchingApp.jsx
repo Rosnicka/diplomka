@@ -7,11 +7,15 @@ import reducer from '../reducers/index';
 
 import {getLoggedUser} from "../actions/users/UsersActions";
 import RouterContainer from "../containers/RouterContainer"
+import {getFields} from "../actions/data/FieldActions";
+import {getFieldLocations} from "../actions/data/FieldLocationActions";
 
 const middleware = [thunk];
 export const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), applyMiddleware(...middleware));
 
 store.dispatch(getLoggedUser());
+store.dispatch(getFields());
+store.dispatch(getFieldLocations());
 
 class DispatchingApp extends Component {
     render() {

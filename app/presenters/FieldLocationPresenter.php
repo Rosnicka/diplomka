@@ -2,15 +2,15 @@
 
 namespace App\Presenters;
 
-use App\Model\Field\Field;
+use App\Model\FieldLocation\FieldLocation;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
 
 /**
- * Class FieldPresenter
+ * Class FieldLocationPresenter
  * @package App\Presenters
  */
-class FieldPresenter extends ResourcePresenter
+class FieldLocationPresenter extends ResourcePresenter
 {
     /** @var  EntityManager $doctrine
      * @inject
@@ -24,8 +24,8 @@ class FieldPresenter extends ResourcePresenter
 
     public function actionRead()
     {
-        $fields = $this->doctrine->getRepository(Field::getClassName())->findAll();
-        $this->resource->data = $fields;
+        $fieldLocations = $this->doctrine->getRepository(FieldLocation::getClassName())->findAll();
+        $this->resource->data = $fieldLocations;
     }
 
     public function actionUpdate()

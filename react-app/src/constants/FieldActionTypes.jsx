@@ -1,0 +1,1 @@
+export const RECEIVE_FIELDS = 'RECEIVE_FIELDS'

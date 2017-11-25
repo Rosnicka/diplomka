@@ -33,5 +33,7 @@ body {
 }
 
 @import "components/game-detail";
+@import "components/team_application_form";
 @import "components/user_login-page";
+@import "vendor/react-forms";
 @import "utils/spinner";

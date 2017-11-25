@@ -3430,6 +3430,8 @@ Object.defineProperty(exports, "__esModule", {
 var TEAMS_URL = exports.TEAMS_URL = '/api/v1/teams';
 var PLAYERS_URL = exports.PLAYERS_URL = '/api/v1/players';
 var FIELDS_URL = exports.FIELDS_URL = '/api/v1/fields';
+var APPLICATIONS_URL = exports.APPLICATIONS_URL = '/api/v1/applications';
+var FIELD_LOCATIONS_URL = exports.FIELD_LOCATIONS_URL = '/api/v1/field-locations';
 
 var LOGGED_USER_URL = exports.LOGGED_USER_URL = '/api/v1/users/logged';
 var LOGIN_USER_URL = exports.LOGIN_USER_URL = '/api/v1/users/login';
@@ -6175,6 +6177,10 @@ var _RouterContainer = __webpack_require__(366);
 
 var _RouterContainer2 = _interopRequireDefault(_RouterContainer);
 
+var _FieldActions = __webpack_require__(432);
+
+var _FieldLocationActions = __webpack_require__(436);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -6187,6 +6193,8 @@ var middleware = [_reduxThunk2.default];
 var store = exports.store = (0, _redux.createStore)(_index2.default, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), _redux.applyMiddleware.apply(undefined, middleware));
 
 store.dispatch((0, _UsersActions.getLoggedUser)());
+store.dispatch((0, _FieldActions.getFields)());
+store.dispatch((0, _FieldLocationActions.getFieldLocations)());
 
 var DispatchingApp = function (_Component) {
     _inherits(DispatchingApp, _Component);
@@ -10940,6 +10948,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var RECEIVE_MY_TEAM = exports.RECEIVE_MY_TEAM = 'RECEIVE_MY_TEAM';
+var RECEIVE_MY_TEAM_APPLICATION = exports.RECEIVE_MY_TEAM_APPLICATION = 'RECEIVE_MY_TEAM_APPLICATION';
 var IS_FETCHING_TEAM = exports.IS_FETCHING_TEAM = 'IS_FETCHING_TEAM';
 
 /***/ }),
@@ -10952,7 +10961,7 @@ var IS_FETCHING_TEAM = exports.IS_FETCHING_TEAM = 'IS_FETCHING_TEAM';
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.createTeam = exports.getMyTeam = exports.isFetchingTeam = undefined;
+exports.createTeamApplication = exports.createTeam = exports.getMyTeam = exports.isFetchingTeam = undefined;
 
 var _MyTeamActionTypes = __webpack_require__(178);
 
@@ -10966,6 +10975,13 @@ var receiveMyTeam = function receiveMyTeam(team) {
     return {
         type: _MyTeamActionTypes.RECEIVE_MY_TEAM,
         team: team
+    };
+};
+
+var receiveMyTeamApplication = function receiveMyTeamApplication(application) {
+    return {
+        type: _MyTeamActionTypes.RECEIVE_MY_TEAM_APPLICATION,
+        application: application
     };
 };
 
@@ -11004,6 +11020,22 @@ var createTeam = exports.createTeam = function createTeam(values) {
                     team = data.data;
                 }
                 dispatch(receiveMyTeam(team));
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+};
+
+var createTeamApplication = exports.createTeamApplication = function createTeamApplication(values) {
+    return function (dispatch) {
+        (0, _FetchMethods.fetchPost)(_Routes.APPLICATIONS_URL, values).then(function (response) {
+            response.json().then(function (data) {
+                var application = {};
+                if (data.data !== false) {
+                    application = data.data;
+                }
+                dispatch(receiveMyTeamApplication(application));
             });
         }).catch(function (error) {
             console.log(error);
@@ -42147,11 +42179,16 @@ var _MyTeamReducer = __webpack_require__(365);
 
 var _MyTeamReducer2 = _interopRequireDefault(_MyTeamReducer);
 
+var _DataReducer = __webpack_require__(434);
+
+var _DataReducer2 = _interopRequireDefault(_DataReducer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var dispatchingApp = (0, _redux.combineReducers)({
     users: _UserIdentityReducer2.default,
-    myTeam: _MyTeamReducer2.default
+    myTeam: _MyTeamReducer2.default,
+    data: _DataReducer2.default
 });
 
 exports.default = dispatchingApp;
@@ -42229,6 +42266,18 @@ var myTeam = function myTeam() {
     }
 };
 
+var myTeamApplication = function myTeamApplication() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _MyTeamActionTypes.RECEIVE_MY_TEAM_APPLICATION:
+            return action.application;
+        default:
+            return state;
+    }
+};
+
 var isFetchingTeam = function isFetchingTeam() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     var action = arguments[1];
@@ -42243,7 +42292,8 @@ var isFetchingTeam = function isFetchingTeam() {
 
 var myTeamReducer = (0, _redux.combineReducers)({
     myTeam: myTeam,
-    isFetchingTeam: isFetchingTeam
+    isFetchingTeam: isFetchingTeam,
+    myTeamApplication: myTeamApplication
 });
 
 exports.default = myTeamReducer;
@@ -47415,7 +47465,7 @@ var PlayerForm = function (_Component) {
                             { htmlFor: 'team' },
                             'T\xFDm'
                         ),
-                        _react2.default.createElement(_reactForm.Select, { field: 'team', id: 'team', options: teamOptions, placeholder: 'Vybert t\xFDm' }),
+                        _react2.default.createElement(_reactForm.Select, { field: 'team', id: 'team', options: teamOptions, placeholder: 'Vyberte t\xFDm' }),
                         _react2.default.createElement(
                             'label',
                             { htmlFor: 'firstName' },
@@ -47668,19 +47718,28 @@ var _LoadingSpinner2 = _interopRequireDefault(_LoadingSpinner);
 
 var _reactBootstrap = __webpack_require__(76);
 
+var _TeamApplicationForm = __webpack_require__(437);
+
+var _TeamApplicationForm2 = _interopRequireDefault(_TeamApplicationForm);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
         myTeam: state.myTeam.myTeam,
-        isFetchingTeam: state.myTeam.isFetchingTeam
+        isFetchingTeam: state.myTeam.isFetchingTeam,
+        fields: state.data.fields,
+        fieldLocations: state.data.fieldLocations
     };
 };
 
-var mapDispatchToProps = function mapDispatchToProps(dispatch, state) {
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     return {
         onSubmitTeamRegistrationForm: function onSubmitTeamRegistrationForm(values) {
             dispatch((0, _MyTeamActions.createTeam)(values));
+        },
+        onSubmitTeamApplicationForm: function onSubmitTeamApplicationForm(values) {
+            dispatch((0, _MyTeamActions.createTeamApplication)(values));
         }
     };
 };
@@ -47688,7 +47747,10 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, state) {
 var MyTeamHomePage = function MyTeamHomePage(props) {
     var myTeam = props.myTeam,
         onSubmitTeamRegistrationForm = props.onSubmitTeamRegistrationForm,
-        isFetchingTeam = props.isFetchingTeam;
+        onSubmitTeamApplicationForm = props.onSubmitTeamApplicationForm,
+        isFetchingTeam = props.isFetchingTeam,
+        fields = props.fields,
+        fieldLocations = props.fieldLocations;
 
 
     var getTeamInfo = function getTeamInfo() {
@@ -47733,11 +47795,12 @@ var MyTeamHomePage = function MyTeamHomePage(props) {
     };
 
     var getTeamSeasonRegistration = function getTeamSeasonRegistration() {
-        if (myTeam.activeSeason === null) {
+        // if (myTeam.activeSeason === null) {
+        if (true) {
             return _react2.default.createElement(
                 'div',
                 null,
-                'Team season registration'
+                _react2.default.createElement(_TeamApplicationForm2.default, { onSubmit: onSubmitTeamApplicationForm, fields: fields, fieldLocations: fieldLocations, myTeamId: myTeam.id })
             );
         } else {
             return '';
@@ -47771,6 +47834,429 @@ var MyTeamHomePage = function MyTeamHomePage(props) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(MyTeamHomePage);
+
+/***/ }),
+/* 432 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getFields = undefined;
+
+var _FieldActionTypes = __webpack_require__(433);
+
+var _Routes = __webpack_require__(71);
+
+var _FetchMethods = __webpack_require__(70);
+
+var receiveFields = function receiveFields(fields) {
+    return {
+        type: _FieldActionTypes.RECEIVE_FIELDS,
+        fields: fields
+    };
+};
+
+var getFields = exports.getFields = function getFields() {
+    return function (dispatch) {
+        (0, _FetchMethods.fetchGet)(_Routes.FIELDS_URL).then(function (response) {
+            response.json().then(function (data) {
+                var fields = [];
+                if (data.data !== false) {
+                    fields = data.data;
+                }
+                dispatch(receiveFields(fields));
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+};
+
+/***/ }),
+/* 433 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var RECEIVE_FIELDS = exports.RECEIVE_FIELDS = 'RECEIVE_FIELDS';
+
+/***/ }),
+/* 434 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _redux = __webpack_require__(38);
+
+var _FieldLocationActionTypes = __webpack_require__(435);
+
+var _FieldActionTypes = __webpack_require__(433);
+
+var fields = function fields() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _FieldActionTypes.RECEIVE_FIELDS:
+            return action.fields;
+        default:
+            return state;
+    }
+};
+
+var fieldLocations = function fieldLocations() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _FieldLocationActionTypes.RECEIVE_FIELD_LOCATIONS:
+            return action.fieldLocations;
+        default:
+            return state;
+    }
+};
+
+var dataReducer = (0, _redux.combineReducers)({
+    fields: fields,
+    fieldLocations: fieldLocations
+});
+
+exports.default = dataReducer;
+
+/***/ }),
+/* 435 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var RECEIVE_FIELD_LOCATIONS = exports.RECEIVE_FIELD_LOCATIONS = 'RECEIVE_FIELD_LOCATIONS';
+
+/***/ }),
+/* 436 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getFieldLocations = undefined;
+
+var _Routes = __webpack_require__(71);
+
+var _FetchMethods = __webpack_require__(70);
+
+var _FieldLocationActionTypes = __webpack_require__(435);
+
+var receiveFieldLocations = function receiveFieldLocations(fieldLocations) {
+    return {
+        type: _FieldLocationActionTypes.RECEIVE_FIELD_LOCATIONS,
+        fieldLocations: fieldLocations
+    };
+};
+
+var getFieldLocations = exports.getFieldLocations = function getFieldLocations() {
+    return function (dispatch) {
+        (0, _FetchMethods.fetchGet)(_Routes.FIELD_LOCATIONS_URL).then(function (response) {
+            response.json().then(function (data) {
+                var fieldLocations = [];
+                if (data.data !== false) {
+                    fieldLocations = data.data;
+                }
+                dispatch(receiveFieldLocations(fieldLocations));
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+};
+
+/***/ }),
+/* 437 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactForm = __webpack_require__(73);
+
+var _reactBootstrap = __webpack_require__(76);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PlayDay = function PlayDay(_ref) {
+    var i = _ref.i,
+        playDay = _ref.playDay,
+        rankOptions = _ref.rankOptions,
+        errorValidator = _ref.errorValidator;
+    return _react2.default.createElement(
+        _reactForm.NestedForm,
+        { field: ['playDays', i], key: 'play-day-' + i },
+        _react2.default.createElement(
+            _reactForm.Form,
+            {
+                defaultValues: { code: playDay.code },
+                validateError: errorValidator
+            },
+            function (formApi) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'form-group' },
+                    _react2.default.createElement(
+                        _reactBootstrap.Label,
+                        { bsStyle: playDay.style },
+                        playDay.label
+                    ),
+                    _react2.default.createElement(_reactForm.Text, { type: 'hidden', className: 'form-control', field: 'code', id: 'play-day-code-' + i }),
+                    _react2.default.createElement(_reactForm.StyledSelect, { field: 'rank',
+                        id: 'play-day-rank-' + i, options: rankOptions, placeholder: 'Vyberte preference' })
+                );
+            }
+        )
+    );
+};
+
+var Field = function Field(_ref2) {
+    var i = _ref2.i,
+        fieldOptions = _ref2.fieldOptions,
+        errorValidator = _ref2.errorValidator;
+    return _react2.default.createElement(
+        _reactForm.NestedForm,
+        { field: ['fieldMemberships', i], key: 'field-membership-' + i },
+        _react2.default.createElement(
+            _reactForm.Form,
+            { validateError: errorValidator },
+            function (formApi) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'form-group' },
+                    _react2.default.createElement(_reactForm.StyledSelect, { field: 'field', id: 'field-membership-field-' + i,
+                        options: fieldOptions, placeholder: 'Vyberte h\u0159i\u0161t\u011B' })
+                );
+            }
+        )
+    );
+};
+
+var FieldLocation = function FieldLocation(_ref3) {
+    var i = _ref3.i,
+        fieldLocationOptions = _ref3.fieldLocationOptions,
+        errorValidator = _ref3.errorValidator;
+    return _react2.default.createElement(
+        _reactForm.NestedForm,
+        { field: ['fieldLocationMemberships', i], key: 'field-location-membership-' + i },
+        _react2.default.createElement(
+            _reactForm.Form,
+            { validateError: errorValidator },
+            function (formApi) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'form-group' },
+                    _react2.default.createElement(_reactForm.StyledSelect, { field: 'fieldLocation',
+                        id: 'field-location-membership-field-location-' + i, options: fieldLocationOptions,
+                        placeholder: 'Vyberte oblast' })
+                );
+            }
+        )
+    );
+};
+
+var TeamApplicationForm = function (_Component) {
+    _inherits(TeamApplicationForm, _Component);
+
+    function TeamApplicationForm(props) {
+        _classCallCheck(this, TeamApplicationForm);
+
+        var _this = _possibleConstructorReturn(this, (TeamApplicationForm.__proto__ || Object.getPrototypeOf(TeamApplicationForm)).call(this, props));
+
+        _this.state = {
+            playDaysRanksSum: 0,
+            playDays: [{ code: "monday", label: "Pondělí", style: "default" }, { code: "tuesday", label: "Úterý", style: "default" }, { code: "wednesday", label: "Středa", style: "default" }, { code: "thursday", label: "Čtvrtek", style: "default" }, { code: "friday", label: "Pátek", style: "default" }, { code: "saturday_am", label: "Sobota (dopoledne)", style: "default" }, { code: "saturday_pm", label: "Sobota (odpoledne)", style: "default" }, { code: "sunday_am", label: "Neděle (dopoledne)", style: "default" }, { code: "sunday_pm", label: "Neděle (odpoledne)", style: "default" }]
+        };
+        return _this;
+    }
+
+    _createClass(TeamApplicationForm, [{
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var _props = this.props,
+                _onSubmit = _props.onSubmit,
+                fields = _props.fields,
+                fieldLocations = _props.fieldLocations,
+                myTeamId = _props.myTeamId;
+
+            var fieldOptions = [].concat(_toConsumableArray(fields.map(function (field) {
+                return {
+                    label: field.name,
+                    value: field.id
+                };
+            })));
+
+            var fieldLocationOptions = [].concat(_toConsumableArray(fieldLocations.map(function (fieldLocation) {
+                return {
+                    label: fieldLocation.name,
+                    value: fieldLocation.id
+                };
+            })));
+
+            var rankOptions = [{ label: 'Ideální termín (1b)', value: 1 }, { label: 'Neutrální termín (3b)', value: 3 }, { label: 'Nevyhovující termín (5b)', value: 5 }];
+
+            var renderPlayDaysSubForm = function renderPlayDaysSubForm() {
+                return _react2.default.createElement(
+                    _reactBootstrap.Row,
+                    null,
+                    _this2.state.playDays.map(function (playDay, index) {
+                        return _react2.default.createElement(
+                            _reactBootstrap.Col,
+                            { xs: 4, key: index },
+                            _react2.default.createElement(PlayDay, { i: index, playDay: playDay, rankOptions: rankOptions, errorValidator: playDayErrorValidator })
+                        );
+                    })
+                );
+            };
+
+            var onChangeFormValues = function onChangeFormValues(values) {
+                if (values.playDays !== undefined) {
+
+                    var playDaysRanksSum = 0;
+                    values.playDays.map(function (playDay) {
+                        if (playDay !== null && playDay.rank !== undefined) {
+                            playDaysRanksSum += playDay.rank;
+                        }
+                    });
+
+                    _this2.setState({
+                        playDaysRanksSum: playDaysRanksSum
+                    });
+                }
+            };
+
+            var playDayErrorValidator = function playDayErrorValidator(values) {
+                return {
+                    rank: values.rank === undefined || values.rank === null ? 'Musíte vybrat vhodnost termínu.' : null
+                };
+            };
+
+            var fieldErrorValidator = function fieldErrorValidator(values) {
+                return {
+                    field: values.field === undefined || values.field === null ? 'Musíte vybrat hřiště.' : null
+                };
+            };
+
+            var fieldLocationErrorValidator = function fieldLocationErrorValidator(values) {
+                return {
+                    fieldLocation: values.fieldLocation === undefined || values.fieldLocation === null ? 'Musíte vybrat oblast.' : null
+                };
+            };
+
+            return _react2.default.createElement(
+                _reactForm.Form,
+                { defaultValues: { team: myTeamId }, onSubmit: function onSubmit(values) {
+                        return _onSubmit(values);
+                    }, formDidUpdate: function formDidUpdate(values) {
+                        onChangeFormValues(values.values);
+                    } },
+                function (formApi) {
+                    return _react2.default.createElement(
+                        'form',
+                        { onSubmit: formApi.submitForm,
+                            id: 'team-application-form' },
+                        _react2.default.createElement(_reactForm.Text, { type: 'hidden', field: 'team', id: 'team' }),
+                        _react2.default.createElement(
+                            _reactBootstrap.Col,
+                            { xs: 12 },
+                            _react2.default.createElement(
+                                'h3',
+                                null,
+                                'Preferovan\xE9 hern\xED dny',
+                                _react2.default.createElement(
+                                    _reactBootstrap.Label,
+                                    { className: 'pull-right',
+                                        bsStyle: _this2.state.playDaysRanksSum > 33 ? 'danger' : 'success' },
+                                    'Sou\u010Det bod\u016F: ',
+                                    _this2.state.playDaysRanksSum,
+                                    'b (max. 33b)'
+                                )
+                            ),
+                            renderPlayDaysSubForm()
+                        ),
+                        _react2.default.createElement(
+                            _reactBootstrap.Col,
+                            { xs: 6 },
+                            _react2.default.createElement(
+                                'h3',
+                                null,
+                                'Preferovan\xE1 h\u0159i\u0161t\u011B'
+                            ),
+                            _react2.default.createElement(Field, { i: 0, fieldOptions: fieldOptions, errorValidator: fieldErrorValidator }),
+                            _react2.default.createElement(Field, { i: 1, fieldOptions: fieldOptions, errorValidator: fieldErrorValidator }),
+                            _react2.default.createElement(Field, { i: 2, fieldOptions: fieldOptions, errorValidator: fieldErrorValidator })
+                        ),
+                        _react2.default.createElement(
+                            _reactBootstrap.Col,
+                            { xs: 6 },
+                            _react2.default.createElement(
+                                'h3',
+                                null,
+                                'Preferovan\xE9 oblasti'
+                            ),
+                            _react2.default.createElement(FieldLocation, { i: 0, fieldLocationOptions: fieldLocationOptions, errorValidator: fieldLocationErrorValidator }),
+                            _react2.default.createElement(FieldLocation, { i: 1, fieldLocationOptions: fieldLocationOptions, errorValidator: fieldLocationErrorValidator }),
+                            _react2.default.createElement(FieldLocation, { i: 2, fieldLocationOptions: fieldLocationOptions, errorValidator: fieldLocationErrorValidator })
+                        ),
+                        _react2.default.createElement(
+                            'button',
+                            { type: 'submit', className: 'btn btn-primary' },
+                            'P\u0159ihl\xE1sit t\xFDm'
+                        )
+                    );
+                }
+            );
+        }
+    }]);
+
+    return TeamApplicationForm;
+}(_react.Component);
+
+exports.default = TeamApplicationForm;
 
 /***/ })
 /******/ ]);

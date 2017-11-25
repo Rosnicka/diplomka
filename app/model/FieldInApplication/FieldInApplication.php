@@ -23,10 +23,4 @@ class FieldInApplication extends BaseEntity
      * @var Application
      */
     protected $application;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @var int
-     */
-    protected $rank;
 }

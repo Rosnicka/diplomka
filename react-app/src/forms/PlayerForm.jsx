@@ -16,7 +16,7 @@ class PlayerForm extends Component {
                 {formApi => (
                     <form onSubmit={formApi.submitForm} id="player-form">
                         <label htmlFor="team">Tým</label>
-                        <Select field="team" id="team" options={teamOptions} placeholder='Vybert tým' />
+                        <Select field="team" id="team" options={teamOptions} placeholder='Vyberte tým' />
                         <label htmlFor="firstName">Jméno</label>
                         <Text field="firstName" id="firstName" />
                         <label htmlFor="firstName">Příjmení</label>
