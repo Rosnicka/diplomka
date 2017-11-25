@@ -37,7 +37,7 @@ class Field extends BaseEntity
     protected $code;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @var string
      */
     protected $address;

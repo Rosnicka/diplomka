@@ -44,10 +44,13 @@ class RouterFactory
         $router[] = new CrudRoute('api/v1/players/[<id>]', 'Player');
         $router[] = new CrudRoute('api/v1/teams/[<id>]', 'Team');
         $router[] = new CrudRoute('api/v1/fields', 'Field');
+        $router[] = new CrudRoute('api/v1/applications', 'Application');
 
         foreach (ReactAppRoutes::getRoutes() as $mask) {
             $router[] = new Route($mask, ['presenter' => 'Homepage', 'action' => 'default']);
         }
+
+        $router[] = new Route('/setup', ['presenter' => 'Setup', 'action' => 'default']);
 
         return $router;
     }
