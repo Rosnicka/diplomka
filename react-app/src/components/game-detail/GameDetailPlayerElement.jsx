@@ -6,8 +6,8 @@ const GameDetailPlayerElement = (props) => {
     return (
         <Row className="game-detail__player">
             <Col xs={1}>{player.number}</Col>
-            <Col xs={5}>{player.first_name} {player.last_name}</Col>
-            <Col xs={6} className="actions">
+            <Col xs={3}>{player.first_name} {player.last_name}</Col>
+            <Col xs={8} className="actions">
                 <Button bsStyle="success" bsSize="small">Gól</Button>
                 <Button bsStyle="info" bsSize="small">Asistence</Button>
                 <Button bsStyle="warning" bsSize="small">Žl. karta</Button>

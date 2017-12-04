@@ -6,12 +6,16 @@ import { Nav, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 
+import App from "../containers/App";
 import UserLoginPage from "../pages/users/UserLoginPage";
 import UserRegistrationPage from "../pages/users/UserRegistrationPage";
 import PlayerRepository from "./players/PlayerRepository";
 import TeamRepository from "./teams/TeamRepository";
 import MyTeamHomePage from "../pages/my-team/MyTeamHomePage";
 import LoadingSpinner from "../components/utils/LoadingSpinner";
+import GameRepository from "./games/GameRepository";
+import TeamGroupResultElement from "../components/group/TeamGroupResultElement";
+import GroupRepository from "./group/GroupRepository";
 
 const mapStateToProps = (state) => {
     return {
@@ -70,7 +74,10 @@ const RouterContainer = (props) => {
                         <Switch>
                             <Route path="/hraci" component={PlayerRepository}/>
                             <Route path="/tymy" component={TeamRepository}/>
+                            {/*<Route path="/" component={GameRepository}/>*/}
                             <Route path="/" component={MyTeamHomePage}/>
+                            {/*<Route path="/" component={App}/>*/}
+                            {/*<Route path="/" component={GroupRepository}/>*/}
                         </Switch>
                     </div>
                 </BrowserRouter>

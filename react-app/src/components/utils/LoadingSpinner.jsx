@@ -4,7 +4,7 @@ const LoadingSpinner = (props) => {
     return (
         <div className="alert alert-info">
             {props.text}
-            <span className="loading-spinner glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+            <span className="loading-spinner glyphicon glyphicon-refresh glyphicon-refresh-animate"/>
         </div>
     );
 };

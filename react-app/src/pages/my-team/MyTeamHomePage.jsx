@@ -35,7 +35,18 @@ const MyTeamHomePage = (props) => {
         } else {
             return (
                 <div>
-                    <h2>{myTeam.name}</h2>
+                    <Col xs={12}>
+                        <h2>{myTeam.name}</h2>
+                        <strong>Sezóna Podzim 2017, 8F</strong>
+                        <br/>
+                    </Col>
+                    <Col xs={12}>
+                        Umístění v tabulkce: 2<br/>
+                        Odehrané zápasy: 5<br/>
+                        Nadcházející zápas: <a href="">{myTeam.name} : SK Slavia</a><br/>
+                        Nadcházející pískání: -
+                    </Col>
+
                 </div>
             )
         }
@@ -46,7 +57,7 @@ const MyTeamHomePage = (props) => {
             return (
                 <div>
                     Ještě nemáš tým?
-                    <TeamRegistrationForm onSubmit={onSubmitTeamRegistrationForm} />
+                    <TeamRegistrationForm onSubmit={onSubmitTeamRegistrationForm}/>
                 </div>
             )
         } else {
@@ -71,7 +82,8 @@ const MyTeamHomePage = (props) => {
         if (true) {
             return (
                 <div>
-                    <TeamApplicationForm onSubmit={onSubmitTeamApplicationForm} fields={fields} fieldLocations={fieldLocations} myTeamId={myTeam.id}/>
+                    <TeamApplicationForm onSubmit={onSubmitTeamApplicationForm} fields={fields}
+                                         fieldLocations={fieldLocations} myTeamId={myTeam.id}/>
                 </div>
             )
         } else {
@@ -87,12 +99,12 @@ const MyTeamHomePage = (props) => {
                 </div>)
         } else {
             return (
-                <Jumbotron>
+                <div>
                     {getTeamInfo()}
-                    {getTeamRegistration()}
-                    {getTeamSeasonInfo()}
-                    {getTeamSeasonRegistration()}
-                </Jumbotron>
+                    {/*{getTeamRegistration()}*/}
+                    {/*{getTeamSeasonInfo()}*/}
+                    {/*{getTeamSeasonRegistration()}*/}
+                </div>
             )
         }
     }

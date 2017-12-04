@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Form, Text, Select} from 'react-form'
+import {Col} from 'react-bootstrap';
+import {Form, Text, StyledSelect, StyledText} from 'react-form'
 
 class PlayerForm extends Component {
     render() {
@@ -15,17 +16,29 @@ class PlayerForm extends Component {
             <Form onSubmit={(values) => onSubmitPlayerForm(values)}>
                 {formApi => (
                     <form onSubmit={formApi.submitForm} id="player-form">
-                        <label htmlFor="team">Tým</label>
-                        <Select field="team" id="team" options={teamOptions} placeholder='Vyberte tým' />
-                        <label htmlFor="firstName">Jméno</label>
-                        <Text field="firstName" id="firstName" />
+                        {/*<label htmlFor="team">Tým</label>*/}
+                        {/*<div className="form-group">*/}
+                            {/*<StyledSelect field="team" id="team" options={teamOptions} placeholder='Vyberte tým' />*/}
+                        {/*</div>*/}
+                        <Col xs={6}>
+                            <label htmlFor="firstName">Jméno</label>
+                            <StyledText field="firstName" id="firstName" />
+                        </Col>
+                        <Col xs={6}>
                         <label htmlFor="firstName">Příjmení</label>
-                        <Text field="lastName" id="lastName" />
+                        <StyledText field="lastName" id="lastName" />
+                        </Col>
+                        <Col xs={6}>
                         <label htmlFor="birthNumber">Rodné číslo</label>
-                        <Text field="birthNumber" id="birthNumber" />
+                        <StyledText field="birthNumber" id="birthNumber" />
+                        </Col>
+                        <Col xs={6}>
                         <label htmlFor="number">Číslo dresu</label>
-                        <Text field="number" id="number" />
+                        <StyledText field="number" id="number" />
+                        </Col>
+                        <Col xs={12}>
                         <button type="submit" className="btn btn-primary">Vytvořit hráče</button>
+                        </Col>
                     </form>
                 )}
             </Form>

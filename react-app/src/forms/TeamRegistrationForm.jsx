@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import { Form, Text } from 'react-form'
+import {Col} from 'react-bootstrap'
+import { Form, StyledText } from 'react-form'
 
 class TeamRegistrationForm extends Component {
     render(){
@@ -9,11 +10,18 @@ class TeamRegistrationForm extends Component {
             <Form onSubmit={(values) => onSubmit(values)}>
                 { formApi => (
                     <form onSubmit={formApi.submitForm} id="team-form">
-                        <label htmlFor="name">Název týmu</label>
-                        <Text field="name" id="name" />
-                        <button type="submit" className="btn btn-primary">
-                            Vytvořit tým
-                        </button>
+                        <Col xs={12}>
+                        <div className="form-group">
+                            <label htmlFor="name">Název týmu</label>
+                            <StyledText field="name" id="name" />
+                        </div>
+                        </Col>
+
+                        <Col xs={12}>
+                            <button type="submit" className="btn btn-primary">
+                                Vytvořit tým
+                            </button>
+                        </Col>
                     </form>
                 )}
             </Form>

@@ -38,8 +38,8 @@ class PlayerRepository extends Component {
     render() {
         return (
             <div>
-                <h2>Nový hráč</h2>
-                <PlayerForm onSubmitPlayerForm={this.onSubmitPlayerForm} teams={this.state.teams}/>
+                <h2>Seznam hráčů</h2>
+                {/*<PlayerForm onSubmitPlayerForm={this.onSubmitPlayerForm} teams={this.state.teams}/>*/}
                 <PlayerList players={this.state.players}/>
             </div>
         );

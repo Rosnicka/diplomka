@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Table} from 'react-bootstrap'
 import GameListElement from "./GameListElement";
 
 class GameList extends Component {
@@ -6,11 +7,24 @@ class GameList extends Component {
         const {games} = this.props
 
         return (
-            <div>
-                {games.map(game => {
-                    return <GameListElement key={game.id} game={game} />
+            <Table striped bordered condensed hover>
+                <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Hřiště</th>
+                    <th>Domácí</th>
+                    <th>Hosté</th>
+                    <th>Stav</th>
+                    <th>Výsledek</th>
+                    <th>Akce</th>
+                </tr>
+                </thead>
+                <tbody>
+                {games.map((game, index) => {
+                    return <GameListElement key={index} game={game} />
                 })}
-            </div>
+                </tbody>
+            </Table>
         );
     }
 }

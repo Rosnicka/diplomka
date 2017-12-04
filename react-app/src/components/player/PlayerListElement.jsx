@@ -4,10 +4,17 @@ const PlayerListElement = (props) => {
     const {player} = props;
 
     return (
-        <div className="player-list-element">
-            <div className="player-list-element__name">{player.first_name} {player.last_name}</div>
-            <div className="player-list-element__number">{player.number}</div>
-        </div>
+        <tr>
+            <td>{player.number}</td>
+            <td>{player.first_name}</td>
+            <td>{player.last_name}</td>
+            <td>{player.birth_number}</td>
+            <td>{Math.floor((Math.random() * 10) + 1)}</td>
+            <td>
+                <button className="btn btn-info btn-sm">Editovat</button>
+                <button className="btn btn-danger btn-sm">Smazat</button>
+            </td>
+        </tr>
     );
 }
 
