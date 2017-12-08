@@ -8,6 +8,7 @@ use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\TeamInGame\TeamInGame;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Nette\DateTime;
 
 /**
  * @ORM\Entity
@@ -55,4 +56,18 @@ class Game extends BaseEntity
      * @var ArrayCollection|GameEvent[]
      */
     protected $gameEvents;
+
+    public function getGameData()
+    {
+        $data = $this->getData();
+        foreach ($this->teamMemberships as $teamMembership) {
+            $data[$teamMembership->relationship] = $teamMembership->team->getData();
+        }
+        $data['datetime'] = $this->datetime->format('Y.m.d H:m');
+        $data['field'] = $this->field->name;
+        $data['result']['home'] = 0;
+        $data['result']['host'] = 2;
+
+        return $data;
+    }
 }

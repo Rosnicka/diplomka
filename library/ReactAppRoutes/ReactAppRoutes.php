@@ -10,7 +10,10 @@ class ReactAppRoutes
 
     const MY_TEAM_HOME = '/muj-tym';
     const PLAYERS = '/hraci';
+    const PLAYER_DETAIL = '/hraci/[<id>]';
     const TEAMS = '/tymy';
+    const GAMES = '/zapasy';
+    const GAME_DETAIL = '/zapasy/[<id>]';
 
     public static function getRoutes()
     {
@@ -19,7 +22,10 @@ class ReactAppRoutes
             self::LOGIN,
             self::REGISTER,
             self::PLAYERS,
+            self::PLAYER_DETAIL,
             self::TEAMS,
+            self::GAMES,
+            self::GAME_DETAIL,
             self::MY_TEAM_HOME,
         ];
     }

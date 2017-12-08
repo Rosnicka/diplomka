@@ -4,7 +4,7 @@ import PlayerListElement from "./PlayerListElement";
 
 class PlayerList extends Component {
     render() {
-        const {players} = this.props;
+        const {players, onDeletePlayer} = this.props;
 
         return (
             <Table striped bordered condensed hover>
@@ -20,7 +20,7 @@ class PlayerList extends Component {
                 </thead>
                 <tbody>
                 {players.map((player) => {
-                    return <PlayerListElement key={player.id} player={player} />
+                    return <PlayerListElement key={player.id} player={player} onDeletePlayer={onDeletePlayer}/>
                 })}
                 </tbody>
             </Table>

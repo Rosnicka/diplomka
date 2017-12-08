@@ -5,6 +5,7 @@ namespace App\Model\Team;
 use App\Model\Application\Application;
 use App\Model\BaseEntity;
 use App\Model\Player\Player;
+use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\TeamInGame\TeamInGame;
 use App\Model\TeamInGroup\TeamInGroup;
 use App\Model\User\User;
@@ -33,6 +34,12 @@ class Team extends BaseEntity
      * @var ArrayCollection|TeamInGroup[]
      */
     protected $groupMemberships;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Model\PlayerInGame\PlayerInGame", mappedBy="team")
+     * @var ArrayCollection|PlayerInGame[]
+     */
+    protected $playersInGameMemberships;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Model\Application\Application", mappedBy="team")

@@ -1,4 +1,5 @@
 import React from 'react';
+import {LinkContainer} from 'react-router-bootstrap';
 
 const GameListElement = (props) => {
     const {game} = props;
@@ -31,14 +32,16 @@ const GameListElement = (props) => {
 
     return (
         <tr>
-            <td>{game.date}</td>
+            <td>{game.datetime}</td>
             <td>{game.field}</td>
-            <td>{game.home}</td>
-            <td>{game.host}</td>
+            <td>{game.home.name}</td>
+            <td>{game.host.name}</td>
             <td>{game.state}</td>
             <td className="text-center">{result()}</td>
             <th>
-                <button className="btn btn-sm btn-info">Detail zápasu</button>
+                <LinkContainer to={'/zapasy/' + game.id}>
+                    <button className="btn btn-sm btn-info">Detail zápasu</button>
+                </LinkContainer>
             </th>
         </tr>
     );

@@ -3,6 +3,7 @@
 namespace App\Model\Player;
 
 use App\Model\BaseEntity;
+use App\Model\Game\GameEvent;
 use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\Team\Team;
 use Doctrine\ORM\Mapping as ORM;
@@ -47,5 +48,11 @@ class Player extends BaseEntity
      * @var PlayerInGame
      */
     protected $gameMemberships;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Model\Game\GameEvent", mappedBy="player")
+     * @var ArrayCollection|GameEvent[]
+     */
+    protected $gameEvents;
 
 }

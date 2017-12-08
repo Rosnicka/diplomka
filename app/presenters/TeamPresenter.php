@@ -2,7 +2,9 @@
 
 namespace App\Presenters;
 
+use App\Model\Game\Game;
 use App\Model\Team\Team;
+use App\Model\TeamInGame\TeamInGame;
 use App\Model\User\User;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
@@ -62,4 +64,44 @@ class TeamPresenter extends ResourcePresenter
         $this->resource->action = 'Delete';
     }
 
+    public function actionReadPlayers()
+    {
+        $id = $this->getParameter('id');
+
+        if ($id !== null) {
+            $team = $this->doctrine->getRepository(Team::getClassName())->find($id);
+            $this->resource->data = $team->players;
+        }
+    }
+
+    public function actionReadGamesToPlay()
+    {
+        $this->getTeamGamesByRelationship(['home', 'host']);
+    }
+
+    public function actionReadGamesAsReferee()
+    {
+        $this->getTeamGamesByRelationship(['referee']);
+    }
+
+    protected function getTeamGamesByRelationship(array $relationship)
+    {
+        $id = $this->getParameter('id');
+
+        $games = [];
+        if ($id !== null) {
+            /** @var TeamInGame $team */
+            $teamGameMemberships = $this->doctrine->getRepository(TeamInGame::getClassName())->findBy([
+                'team' => $id,
+                'relationship' => $relationship,
+            ]);
+
+            foreach ($teamGameMemberships as $teamGameMembership) {
+                /** @var Game $game */
+                $game = $teamGameMembership->game;
+                $games[] = $game->getGameData();
+            }
+        }
+        $this->resource->data = $games;
+    }
 }

@@ -14,3 +14,19 @@ export const fetchPost = (url, values) => {
         }
     });
 }
+
+export const fetchDelete = (url) => {
+    return fetch(url, {
+        method: 'DELETE',
+    });
+}
+
+export const fetchPut = (url, values) => {
+    return fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(values),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}

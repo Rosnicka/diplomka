@@ -3,6 +3,7 @@
 namespace App\Model\Game;
 
 use App\Model\BaseEntity;
+use App\Model\Player\Player;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,9 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class GameEvent extends BaseEntity
 {
     const GAME_EVENT_TYPE_GOAL = 'goal';
-    const GAME_EVENT_TYPE_ASSISTANCE = 'assistance';
-    const GAME_EVENT_TYPE_SAVE = 'save';
-    const GAME_EVENT_TYPE_FOUL = 'foul';
+    const GAME_EVENT_TYPE_ASSIST = 'assist';
     const GAME_EVENT_TYPE_YELLOW_CARD = 'yellow_card';
     const GAME_EVENT_TYPE_RED_CARD = 'red_card';
 
@@ -40,4 +39,10 @@ class GameEvent extends BaseEntity
      * @var Game
      */
     protected $game;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Model\Player\Player", inversedBy="gameEvents")
+     * @var Player
+     */
+    protected $player;
 }

@@ -6,7 +6,6 @@ use App\Model\Player\Player;
 use App\Model\Player\PlayerFactory;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
-use Drahak\Restful\Application\UI\SecuredResourcePresenter;
 
 /**
  * Class PlayerPresenter
@@ -48,12 +47,38 @@ class PlayerPresenter extends ResourcePresenter
 
     public function actionUpdate()
     {
-        $this->resource->action = 'Update';
+        $id = $this->getParameter('id');
+
+        if ($id !== null) {
+            $this->resource->data = false;
+        }
+
+        /** @var Player $player */
+        $player = $this->doctrine->getRepository(Player::getClassName())->find($id);
+        foreach ($this->getInput()->getData() as $key => $col) {
+            $player->{$key} = $col;
+        }
+        $this->doctrine->persist($player);
+        $this->doctrine->flush();
+
+        $this->resource->data = $player;
+
     }
 
     public function actionDelete()
     {
-        $this->resource->action = 'Delete';
+        $id = $this->getParameter('id');
+
+        if ($id !== null) {
+            $this->resource->data = false;
+        }
+
+        /** @var Player $player */
+        $player = $this->doctrine->getRepository(Player::getClassName())->find($id);
+        $this->doctrine->remove($player);
+        $this->doctrine->flush();
+
+        $this->resource->data = true;
     }
 
 }
