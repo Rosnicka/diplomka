@@ -1,10 +1,16 @@
-import {getGameByIdUrl, getGameEventsByGameId, getTeamPlayersByTeamIdUrl} from "../../constants/Routes";
 import {
+    getGameByIdUrl, getGameEventsByGameId, getGamePlayersByGameIdUrl, getGameTeamPlayers, getRemovePlayerFromGameUrl,
+    getTeamPlayersByTeamIdUrl
+} from "../../constants/Routes";
+import {
+    GD_ADD_HOME_PLAYER,
+    GD_ADD_HOST_PLAYER,
     GD_RECEIVE_EVENTS,
     GD_RECEIVE_GAME_HEADER, GD_RECEIVE_HOME_PLAYERS,
-    GD_RECEIVE_HOST_PLAYERS, GD_RESET_EVENTS, GD_RESET_GAME_HEADER
+    GD_RECEIVE_HOST_PLAYERS, GD_REMOVE_HOME_PLAYER, GD_REMOVE_HOST_PLAYER, GD_RESET_EVENTS, GD_RESET_GAME_HEADER
 } from "../../constants/GameDetailActionTypes";
-import {fetchGet} from "../../utils/FetchMethods";
+import {fetchDelete, fetchGet, fetchPost} from "../../utils/FetchMethods";
+import {store} from "../../containers/DispatchingApp";
 
 const receiveGameHeader = game => {
     return {
@@ -20,10 +26,38 @@ const receiveHomePlayers = players => {
     }
 }
 
+const addHomePlayer = player => {
+    return {
+        type: GD_ADD_HOME_PLAYER,
+        player: player
+    }
+}
+
+const removeHomePlayer = playerId => {
+    return {
+        type: GD_REMOVE_HOME_PLAYER,
+        playerId: playerId
+    }
+}
+
 const receiveHostPlayers = players => {
     return {
         type: GD_RECEIVE_HOST_PLAYERS,
         players: players
+    }
+}
+
+const addHostPlayer = player => {
+    return {
+        type: GD_ADD_HOST_PLAYER,
+        player: player
+    }
+}
+
+const removeHostPlayer = playerId => {
+    return {
+        type: GD_REMOVE_HOST_PLAYER,
+        playerId: playerId
     }
 }
 
@@ -92,8 +126,8 @@ export const loadGameDetail = (gameId) => dispatch => {
                 game = data.data;
             }
             dispatch(receiveGameHeader(game));
-            dispatch(loadGameDetailHomePlayers(game.home.id));
-            dispatch(loadGameDetailHostPlayers(game.host.id));
+            dispatch(loadGameDetailHomePlayers(game.id, game.home.id));
+            dispatch(loadGameDetailHostPlayers(game.id, game.host.id));
 
         });
     }).catch(function (error) {
@@ -101,8 +135,8 @@ export const loadGameDetail = (gameId) => dispatch => {
     });
 }
 
-const loadGameDetailHomePlayers = (teamId) => dispatch => {
-    fetchGet(getTeamPlayersByTeamIdUrl(teamId)).then((response) => {
+const loadGameDetailHomePlayers = (gameId, teamId) => dispatch => {
+    fetchGet(getGameTeamPlayers(gameId, teamId)).then((response) => {
         response.json().then((data) => {
             let players = [];
             if (data.data !== false) {
@@ -115,14 +149,55 @@ const loadGameDetailHomePlayers = (teamId) => dispatch => {
     });
 }
 
-const loadGameDetailHostPlayers = (teamId) => dispatch => {
-    fetchGet(getTeamPlayersByTeamIdUrl(teamId)).then((response) => {
+const loadGameDetailHostPlayers = (gameId, teamId) => dispatch => {
+    fetchGet(getGameTeamPlayers(gameId, teamId)).then((response) => {
         response.json().then((data) => {
             let players = [];
             if (data.data !== false) {
                 players = data.data;
             }
             dispatch(receiveHostPlayers(players))
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const addPlayerToGame = (playerId) => dispatch => {
+    const state = store.getState();
+    const data = {
+        player: playerId,
+        team: state.myTeam.myTeam.id,
+    }
+
+    fetchPost(getGamePlayersByGameIdUrl(state.gameDetail.gameHeader.id), data).then((response) => {
+        response.json().then((data) => {
+            if (data.data !== false) {
+                const player = data.data;
+                if (state.gameDetail.gameHeader.home.id === state.myTeam.myTeam.id) {
+                    dispatch(addHomePlayer(player));
+                } else {
+                    dispatch(addHostPlayer(player));
+                }
+            }
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const removePlayerFromGame = (playerId) => dispatch => {
+    const state = store.getState();
+
+    fetchDelete(getRemovePlayerFromGameUrl(state.gameDetail.gameHeader.id, playerId)).then((response) => {
+        response.json().then((data) => {
+            if (data.data === true) {
+                if (state.gameDetail.gameHeader.home.id === state.myTeam.myTeam.id) {
+                    dispatch(removeHomePlayer(playerId));
+                } else {
+                    dispatch(removeHostPlayer(playerId));
+                }
+            }
         });
     }).catch(function (error) {
         console.log(error);

@@ -31,3 +31,15 @@ export const getTeamGamesAsRefereeByTeamIdUrl = (teamId) => {
 export const getGameEventsByGameId = (gameId) => {
     return getGameByIdUrl(gameId) + '/events'
 }
+
+export const getGamePlayersByGameIdUrl = (gameId) => {
+    return getGameByIdUrl(gameId) + '/players'
+}
+
+export const getRemovePlayerFromGameUrl = (gameId, playerId) => {
+    return getGamePlayersByGameIdUrl(gameId) + '/' + playerId
+}
+
+export const getGameTeamPlayers = (gameId, teamId) => {
+    return getGameByIdUrl(gameId) + '/teamPlayers/' + teamId
+}

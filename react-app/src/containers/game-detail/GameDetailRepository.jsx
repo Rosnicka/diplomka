@@ -6,6 +6,7 @@ import GameDetailPlayerElement from "../../components/game-detail/GameDetailPlay
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import GameDetailEventList from "../../components/game-detail/GameDetailEventList";
 import GameDetailPrepareRoster from "../../components/game-detail/GameDetailPrepareRoster";
+import {addPlayerToGame, removePlayerFromGame} from "../../actions/game-detail/GameDetailActions";
 
 const mapStateToProps = (state) => {
     return {
@@ -13,37 +14,62 @@ const mapStateToProps = (state) => {
         homePlayers: state.gameDetail.homePlayers,
         hostPlayers: state.gameDetail.hostPlayers,
         myPlayers: state.myTeam.myPlayers,
-        gameEvents: state.gameDetail.gameEvents
+        gameEvents: state.gameDetail.gameEvents,
+        myTeam: state.myTeam.myTeam,
     }
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return {};
+    return {
+        onSelectAddPlayer: (playerId) => {
+            dispatch(addPlayerToGame(playerId))
+        },
+        onClickRemovePlayerFromRoaster: (playerId) => {
+            dispatch(removePlayerFromGame(playerId))
+        }
+    };
 };
 
 const GameDetailRepository = (props) => {
-    const {gameHeader, homePlayers, hostPlayers, gameEvents, myPlayers} = props;
+    const {gameHeader, homePlayers, hostPlayers, gameEvents, myPlayers, myTeam, onSelectAddPlayer, onClickRemovePlayerFromRoaster} = props;
 
     const loadPlayers = (players, loadingText) => {
         if (players === false) {
-            return <LoadingSpinner text={loadingText} />
+            return <LoadingSpinner text={loadingText}/>
         }
 
-        {players.map(player => {
-            return (
-                <GameDetailPlayerElement key={player.id} player={player}/>
-            )
-        })}
+        {
+            players.map(player => {
+                return (
+                    <GameDetailPlayerElement key={player.id} player={player}/>
+                )
+            })
+        }
     }
 
     const homeTeamName = () => (gameHeader !== false ? gameHeader.home.name : '')
     const hostTeamName = () => (gameHeader !== false ? gameHeader.host.name : '')
 
-    const playersRoster = () => {
-        if (myPlayers !== false && hostPlayers !== false) {
-            return <GameDetailPrepareRoster players={myPlayers} playersOnRoster={hostPlayers} />
+    const homeTeamRoster = () => {
+        if (gameHeader.home === undefined || myTeam.id === undefined || homePlayers === false || myPlayers === false) {
+            return <LoadingSpinner text="Načítám soupisky"/>
+        } else if (myPlayers !== false && gameHeader.home.id === myTeam.id) {
+            return <GameDetailPrepareRoster myPlayers={myPlayers} playersOnRoster={homePlayers}
+                                            onSelectAddPlayer={onSelectAddPlayer}
+                                            onClickRemovePlayerFromRoaster={onClickRemovePlayerFromRoaster}/>
         }
-        return '';
+        return 'Nejste kapitan domacího týmu';
+    }
+
+    const hostTeamRoster = () => {
+        if (gameHeader.home === undefined || myTeam.id === undefined || hostPlayers === false || myPlayers === false) {
+            return <LoadingSpinner text="Načítám soupisky"/>
+        } else if (myPlayers !== false && myTeam.id !== undefined && gameHeader.host.id === myTeam.id) {
+            return <GameDetailPrepareRoster myPlayers={myPlayers} playersOnRoster={hostPlayers}
+                                            onSelectAddPlayer={onSelectAddPlayer}
+                                            onClickRemovePlayerFromRoaster={onClickRemovePlayerFromRoaster}/>
+        }
+        return 'Nejste kapitan hostujiciho týmu';
     }
 
     return (
@@ -78,10 +104,10 @@ const GameDetailRepository = (props) => {
                 </Row>
                 <Row>
                     <Col xs={6}>
-                        {playersRoster()}
+                        {homeTeamRoster()}
                     </Col>
                     <Col xs={6}>
-
+                        {hostTeamRoster()}
                     </Col>
                 </Row>
                 <Row>
@@ -92,7 +118,7 @@ const GameDetailRepository = (props) => {
                         {loadPlayers(hostPlayers, 'Načítám hráče hostů')}
                     </Col>
                 </Row>
-                <GameDetailEventList events={gameEvents} />
+                <GameDetailEventList events={gameEvents}/>
             </Col>
         </div>
     );

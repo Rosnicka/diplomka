@@ -25,9 +25,30 @@ class PlayerForm extends Component {
             }
         }
 
+        const requiredFieldsValidator = (values) => {
+            return {
+                firstName: values.firstName === undefined ||
+                           values.firstName === null ||
+                           values.firstName === '' ? 'Musíte vyplnit jméno.' : null,
+
+                lastName: values.lastName === undefined ||
+                values.lastName === null ||
+                values.lastName === '' ? 'Musíte vyplnit příjmení.' : null,
+
+                birthNumber: values.birthNumber === undefined ||
+                values.birthNumber === null ||
+                values.birthNumber === '' ? 'Musíte vyplnit rodné číslo.' : null,
+
+                number: values.number === undefined ||
+                values.number === null ||
+                values.number === '' ? 'Musíte vyplnit číslo dresu.' : null
+            }
+        }
+
         return (
             <Form
                 defaultValues={defaultValues()}
+                validateError={requiredFieldsValidator}
                 onSubmit={(values) => onSubmitPlayerForm(player, values)}>
                 {formApi => (
                     <form onSubmit={formApi.submitForm} id="player-form">

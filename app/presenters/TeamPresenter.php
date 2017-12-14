@@ -8,6 +8,7 @@ use App\Model\TeamInGame\TeamInGame;
 use App\Model\User\User;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
+use Drahak\Restful\Security\Process\SecuredAuthentication;
 
 /**
  * Class TeamPresenter
@@ -19,6 +20,24 @@ class TeamPresenter extends ResourcePresenter
      * @inject
      */
     public $doctrine;
+//
+//    /** @var SecuredAuthentication */
+//    private $securedAuthentication;
+//
+//    /**
+//     * Inject secured authentication process
+//     * @param SecuredAuthentication $auth
+//     */
+//    public function injectSecuredAuthentication(SecuredAuthentication $auth)
+//    {
+//        $this->securedAuthentication = $auth;
+//    }
+//
+//    protected function startup()
+//    {
+//        parent::startup();
+//        $this->authentication->setAuthProcess($this->securedAuthentication);
+//    }
 
     public function actionCreate()
     {

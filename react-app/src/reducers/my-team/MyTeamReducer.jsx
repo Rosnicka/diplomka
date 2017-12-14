@@ -36,15 +36,20 @@ const myPlayers = (state = [], action) => {
         case RECEIVE_MY_PLAYERS:
             return action.players;
         case RECEIVE_NEW_PLAYER:
-            return [...state, action.player]
+            return [...state, action.player];
         case RECEIVE_UPDATED_PLAYER:
-            return [...state.filter((player) => {return player.id !== action.player.id}), action.player]
+            return [...state.filter((player) => {
+                return player.id !== action.player.id
+            }), action.player];
         case REMOVE_PLAYER:
-            return [...state.filter((player) => {return player.id !== action.id})]
+            return [...state.filter((player) => {
+                    return player.id !== action.id
+                }
+            )];
         default:
             return state;
     }
-}
+};
 
 const myTeamApplication = (state = {}, action) => {
     switch (action.type) {

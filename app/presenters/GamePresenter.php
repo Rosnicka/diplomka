@@ -3,7 +3,9 @@
 namespace App\Presenters;
 
 use App\Model\Game\Game;
+use App\Model\Player\Player;
 use App\Model\PlayerInGame\PlayerInGame;
+use App\Model\Team\Team;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
 
@@ -42,7 +44,7 @@ class GamePresenter extends ResourcePresenter
         $this->resource->data = $data;
     }
 
-    public function actionReadPlayers()
+    public function actionReadTeamPlayers()
     {
         $gameId = $this->getParameter('id');
         $teamId = $this->getParameter('relationId');
@@ -77,6 +79,42 @@ class GamePresenter extends ResourcePresenter
             $data[] = $gameEvent;
         }
         $this->resource->data = $data;
+    }
+
+    public function actionCreatePlayers()
+    {
+        $gameId = $this->getParameter('id');
+        $game = $this->doctrine->getRepository(Game::getClassName())->find($gameId);
+        $data = $this->getInput()->getData();
+
+        $team = $this->doctrine->getRepository(Team::getClassName())->find($data['team']);
+        $player = $this->doctrine->getRepository(Player::getClassName())->find($data['player']);
+
+        $playerInGame = new PlayerInGame();
+        $playerInGame->setGame($game);
+        $playerInGame->setPlayer($player);
+        $playerInGame->setTeam($team);
+
+        $this->doctrine->persist($playerInGame);
+        $this->doctrine->flush();
+
+        $this->resource->data = $player;
+    }
+
+    public function actionDeletePlayers()
+    {
+        $gameId = $this->getParameter('id');
+        $playerId = $this->getParameter('relationId');
+
+        $playerInGame = $this->doctrine->getRepository(PlayerInGame::getClassName())->findOneBy([
+            'game' => $gameId,
+            'player' => $playerId
+        ]);
+
+        $this->doctrine->remove($playerInGame);
+        $this->doctrine->flush();
+
+        $this->resource->data = true;
     }
 
 }
