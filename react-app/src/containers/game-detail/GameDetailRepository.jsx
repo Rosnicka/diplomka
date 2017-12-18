@@ -1,15 +1,12 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Col, Row} from 'react-bootstrap'
-import GameDetailPlayerElement from "../../components/game-detail/GameDetailPlayerElement";
 
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import GameDetailEventList from "../../components/game-detail/GameDetailEventList";
-import GameDetailPrepareRoster from "../../components/game-detail/GameDetailPrepareRoster";
 import {addPlayerToGame, removePlayerFromGame} from "../../actions/game-detail/GameDetailActions";
 import GameDetailControls from "../../components/game-detail/GameDetailControls";
 import GameDetailHeader from "../../components/game-detail/GameDetailHeader";
-import GameDetailRoasterPlayerList from "../../components/game-detail/player-roster/GameDetailRosterPlayerList";
 import GameDetailPlayerRoster from "../../components/game-detail/player-roster/GameDetailRoster";
 
 const mapStateToProps = (state) => {
@@ -30,12 +27,16 @@ const mapDispatchToProps = (dispatch) => {
         },
         onClickRemovePlayerFromRoaster: (playerId) => {
             dispatch(removePlayerFromGame(playerId))
+        },
+        onClickAddNewEvent: (player, eventType) => {
+            console.log(player);
+            console.log(eventType)
         }
     };
 };
 
 const GameDetailRepository = (props) => {
-    const {gameHeader, homePlayers, hostPlayers, gameEvents, myPlayers, myTeam, onSelectAddPlayer, onClickRemovePlayerFromRoaster} = props;
+    const {gameHeader, homePlayers, hostPlayers, gameEvents, myTeam} = props;
 
     const homeTeamName = () => (gameHeader !== false ? gameHeader.home.name : '')
     const hostTeamName = () => (gameHeader !== false ? gameHeader.host.name : '')
@@ -57,6 +58,10 @@ const GameDetailRepository = (props) => {
         return (gameHeader.host.id === myTeam.id)
     }
 
+    const isReferee = () => {
+        return (gameHeader.referee.id === myTeam.id)
+    }
+
     const renderPlayerRoster = () => {
         if (!isLoaded()) {
             return (
@@ -67,10 +72,14 @@ const GameDetailRepository = (props) => {
                 <Row>
                     <Col xs={6} className="game-detail__team-roster">
                         <GameDetailPlayerRoster isCaptain={isHomeTeamCaptain()}
+                                                isReferee={isReferee()}
+                                                gameState={gameHeader.state}
                                                 playersOnRoster={homePlayers} {...props} />
                     </Col>
                     <Col xs={6} className="game-detail__team-roster">
                         <GameDetailPlayerRoster isCaptain={isHostTeamCaptain()}
+                                                isReferee={isReferee()}
+                                                gameState={gameHeader.state}
                                                 playersOnRoster={hostPlayers} {...props} />
                     </Col>
                 </Row>

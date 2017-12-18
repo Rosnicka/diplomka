@@ -1,21 +1,23 @@
 import React from 'react';
-import {Alert} from 'react-bootstrap'
+import {Label} from 'react-bootstrap'
 import GameDetailRosterPlayerList from "./GameDetailRosterPlayerList";
 import GameDetailRosterAddPlayer from "./GameDetailRosterAddPlayer";
-import LoadingSpinner from "../../utils/LoadingSpinner";
+import {GAME_STATE_FILLING_ROSTER} from "../../../constants/GameStateTypes";
 
 const GameDetailRoster = (props) => {
-    const {isCaptain, myPlayers, playersOnRoster} = props;
+    const {isCaptain, gameState} = props;
 
     const renderAddPlayer = () => {
+        if (gameState !== GAME_STATE_FILLING_ROSTER) {
+            return '';
+        }
+
         if (!isCaptain) {
             return (
-                <Alert bsStyle="warning">
+                <Label bsStyle="warning">
                     Nejste kapitán tohoto týmu
-                </Alert>
+                </Label>
             )
-        } else if (playersOnRoster === false || myPlayers === false) {
-            return <LoadingSpinner text="Načítám hráče pro soupisku"/>;
         } else {
             return <GameDetailRosterAddPlayer {...props}/>
         }

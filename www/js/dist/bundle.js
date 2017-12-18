@@ -6500,9 +6500,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactBootstrap = __webpack_require__(12);
 
 var _GameDetailRosterPlayerElement = __webpack_require__(451);
 
@@ -6511,16 +6515,46 @@ var _GameDetailRosterPlayerElement2 = _interopRequireDefault(_GameDetailRosterPl
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GameDetailRosterPlayerList = function GameDetailRosterPlayerList(props) {
-    var playersOnRoster = props.playersOnRoster,
-        onClickRemovePlayerFromRoaster = props.onClickRemovePlayerFromRoaster;
+    var playersOnRoster = props.playersOnRoster;
 
+
+    var listPlayers = function listPlayers() {
+        return playersOnRoster.map(function (player, index) {
+            return _react2.default.createElement(_GameDetailRosterPlayerElement2.default, _extends({ key: index, player: player }, props));
+        });
+    };
 
     return _react2.default.createElement(
-        "div",
+        _reactBootstrap.Table,
         null,
-        playersOnRoster.map(function (player, index) {
-            return _react2.default.createElement(_GameDetailRosterPlayerElement2.default, { key: index, player: player, onClickRemovePlayerFromRoaster: onClickRemovePlayerFromRoaster });
-        })
+        _react2.default.createElement(
+            'thead',
+            null,
+            _react2.default.createElement(
+                'tr',
+                null,
+                _react2.default.createElement(
+                    'th',
+                    null,
+                    '#'
+                ),
+                _react2.default.createElement(
+                    'th',
+                    null,
+                    'Hr\xE1\u010D'
+                ),
+                _react2.default.createElement(
+                    'th',
+                    null,
+                    'Akce'
+                )
+            )
+        ),
+        _react2.default.createElement(
+            'tbody',
+            null,
+            listPlayers()
+        )
     );
 };
 
@@ -49501,10 +49535,6 @@ var _reactRedux = __webpack_require__(25);
 
 var _reactBootstrap = __webpack_require__(12);
 
-var _GameDetailPlayerElement = __webpack_require__(446);
-
-var _GameDetailPlayerElement2 = _interopRequireDefault(_GameDetailPlayerElement);
-
 var _LoadingSpinner = __webpack_require__(56);
 
 var _LoadingSpinner2 = _interopRequireDefault(_LoadingSpinner);
@@ -49512,10 +49542,6 @@ var _LoadingSpinner2 = _interopRequireDefault(_LoadingSpinner);
 var _GameDetailEventList = __webpack_require__(447);
 
 var _GameDetailEventList2 = _interopRequireDefault(_GameDetailEventList);
-
-var _GameDetailPrepareRoster = __webpack_require__(450);
-
-var _GameDetailPrepareRoster2 = _interopRequireDefault(_GameDetailPrepareRoster);
 
 var _GameDetailActions = __webpack_require__(208);
 
@@ -49526,10 +49552,6 @@ var _GameDetailControls2 = _interopRequireDefault(_GameDetailControls);
 var _GameDetailHeader = __webpack_require__(453);
 
 var _GameDetailHeader2 = _interopRequireDefault(_GameDetailHeader);
-
-var _GameDetailRosterPlayerList = __webpack_require__(116);
-
-var _GameDetailRosterPlayerList2 = _interopRequireDefault(_GameDetailRosterPlayerList);
 
 var _GameDetailRoster = __webpack_require__(454);
 
@@ -49555,6 +49577,10 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         },
         onClickRemovePlayerFromRoaster: function onClickRemovePlayerFromRoaster(playerId) {
             dispatch((0, _GameDetailActions.removePlayerFromGame)(playerId));
+        },
+        onClickAddNewEvent: function onClickAddNewEvent(player, eventType) {
+            console.log(player);
+            console.log(eventType);
         }
     };
 };
@@ -49564,10 +49590,7 @@ var GameDetailRepository = function GameDetailRepository(props) {
         homePlayers = props.homePlayers,
         hostPlayers = props.hostPlayers,
         gameEvents = props.gameEvents,
-        myPlayers = props.myPlayers,
-        myTeam = props.myTeam,
-        onSelectAddPlayer = props.onSelectAddPlayer,
-        onClickRemovePlayerFromRoaster = props.onClickRemovePlayerFromRoaster;
+        myTeam = props.myTeam;
 
 
     var homeTeamName = function homeTeamName() {
@@ -49589,6 +49612,10 @@ var GameDetailRepository = function GameDetailRepository(props) {
         return gameHeader.host.id === myTeam.id;
     };
 
+    var isReferee = function isReferee() {
+        return gameHeader.referee.id === myTeam.id;
+    };
+
     var renderPlayerRoster = function renderPlayerRoster() {
         if (!isLoaded()) {
             return _react2.default.createElement(_LoadingSpinner2.default, { text: 'Na\u010D\xEDt\xE1m soupisky hr\xE1\u010D\u016F' });
@@ -49600,12 +49627,16 @@ var GameDetailRepository = function GameDetailRepository(props) {
                     _reactBootstrap.Col,
                     { xs: 6, className: 'game-detail__team-roster' },
                     _react2.default.createElement(_GameDetailRoster2.default, _extends({ isCaptain: isHomeTeamCaptain(),
+                        isReferee: isReferee(),
+                        gameState: gameHeader.state,
                         playersOnRoster: homePlayers }, props))
                 ),
                 _react2.default.createElement(
                     _reactBootstrap.Col,
                     { xs: 6, className: 'game-detail__team-roster' },
                     _react2.default.createElement(_GameDetailRoster2.default, _extends({ isCaptain: isHostTeamCaptain(),
+                        isReferee: isReferee(),
+                        gameState: gameHeader.state,
                         playersOnRoster: hostPlayers }, props))
                 )
             );
@@ -49629,77 +49660,7 @@ var GameDetailRepository = function GameDetailRepository(props) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(GameDetailRepository);
 
 /***/ }),
-/* 446 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactBootstrap = __webpack_require__(12);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var GameDetailPlayerElement = function GameDetailPlayerElement(props) {
-    var player = props.player;
-
-
-    var goalBtn = function goalBtn() {
-        return _react2.default.createElement(
-            _reactBootstrap.Button,
-            { bsStyle: 'success', bsSize: 'small' },
-            'G\xF3l'
-        );
-    };
-
-    return _react2.default.createElement(
-        _reactBootstrap.Row,
-        { className: 'game-detail__player' },
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 1 },
-            player.number
-        ),
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 3 },
-            player.first_name,
-            ' ',
-            player.last_name
-        ),
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 8, className: 'actions' },
-            goalBtn(),
-            _react2.default.createElement(
-                _reactBootstrap.Button,
-                { bsStyle: 'info', bsSize: 'small' },
-                'Asistence'
-            ),
-            _react2.default.createElement(
-                _reactBootstrap.Button,
-                { bsStyle: 'warning', bsSize: 'small' },
-                '\u017Dl. karta'
-            ),
-            _react2.default.createElement(
-                _reactBootstrap.Button,
-                { bsStyle: 'danger', bsSize: 'small' },
-                '\u010C. karta'
-            )
-        )
-    );
-};
-
-exports.default = GameDetailPlayerElement;
-
-/***/ }),
+/* 446 */,
 /* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49872,77 +49833,7 @@ var GAME_EVENT_TYPE_YELLOW_CARD = exports.GAME_EVENT_TYPE_YELLOW_CARD = 'yellow_
 var GAME_EVENT_TYPE_RED_CARD = exports.GAME_EVENT_TYPE_RED_CARD = 'red_card';
 
 /***/ }),
-/* 450 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactBootstrap = __webpack_require__(12);
-
-var _GameDetailRosterPlayerList = __webpack_require__(116);
-
-var _GameDetailRosterPlayerList2 = _interopRequireDefault(_GameDetailRosterPlayerList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var GameDetailPrepareRoster = function GameDetailPrepareRoster(props) {
-    var myPlayers = props.myPlayers,
-        playersOnRoster = props.playersOnRoster,
-        onSelectAddPlayer = props.onSelectAddPlayer,
-        onClickRemovePlayerFromRoaster = props.onClickRemovePlayerFromRoaster;
-
-    var playersOptions = myPlayers.filter(function (player) {
-        var playerFoundOnRoaster = playersOnRoster.find(function (playerOnRoster) {
-            return playerOnRoster.id === player.id;
-        });
-        return playerFoundOnRoaster === undefined;
-    });
-
-    var dropdownButton = function dropdownButton() {
-        if (playersOptions.length === 0) {
-            return '';
-        }
-
-        return _react2.default.createElement(
-            _reactBootstrap.DropdownButton,
-            { bsStyle: 'success', title: 'P\u0159idat hr\xE1\u010De do soupisky', id: 'select-player',
-                onSelect: function onSelect(key) {
-                    return onSelectAddPlayer(key);
-                } },
-            playersOptions.map(function (player, index) {
-                return _react2.default.createElement(
-                    _reactBootstrap.MenuItem,
-                    { key: player.id,
-                        eventKey: player.id },
-                    player.first_name,
-                    ' ',
-                    player.last_name
-                );
-            })
-        );
-    };
-
-    return _react2.default.createElement(
-        'div',
-        null,
-        dropdownButton(),
-        _react2.default.createElement(_GameDetailRosterPlayerList2.default, { playersOnRoster: playersOnRoster,
-            onClickRemovePlayerFromRoaster: onClickRemovePlayerFromRoaster })
-    );
-};
-
-exports.default = GameDetailPrepareRoster;
-
-/***/ }),
+/* 450 */,
 /* 451 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49959,38 +49850,98 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactBootstrap = __webpack_require__(12);
 
+var _GameEventTypes = __webpack_require__(449);
+
+var _GameStateTypes = __webpack_require__(458);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GameDetailRosterPlayerElement = function GameDetailRosterPlayerElement(props) {
     var player = props.player,
-        onClickRemovePlayerFromRoaster = props.onClickRemovePlayerFromRoaster;
+        onClickRemovePlayerFromRoaster = props.onClickRemovePlayerFromRoaster,
+        onClickAddNewEvent = props.onClickAddNewEvent,
+        isReferee = props.isReferee,
+        isCaptain = props.isCaptain,
+        gameState = props.gameState;
 
+    var getGameEventButtons = function getGameEventButtons() {
+        if (isReferee && gameState === _GameStateTypes.GAME_STATE_PLAYING) {
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
+                    _reactBootstrap.Button,
+                    { bsStyle: 'success', bsSize: 'small',
+                        onClick: function onClick() {
+                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_GOAL);
+                        } },
+                    'G\xF3l'
+                ),
+                _react2.default.createElement(
+                    _reactBootstrap.Button,
+                    { bsStyle: 'info', bsSize: 'small',
+                        onClick: function onClick() {
+                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_ASSIST);
+                        } },
+                    'Asistence'
+                ),
+                _react2.default.createElement(
+                    _reactBootstrap.Button,
+                    { bsStyle: 'warning', bsSize: 'small',
+                        onClick: function onClick() {
+                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_YELLOW_CARD);
+                        } },
+                    '\u017Dl. karta'
+                ),
+                _react2.default.createElement(
+                    _reactBootstrap.Button,
+                    { bsStyle: 'danger', bsSize: 'small',
+                        onClick: function onClick() {
+                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_RED_CARD);
+                        } },
+                    '\u010C. karta'
+                )
+            );
+        } else {
+            return '';
+        }
+    };
 
-    return _react2.default.createElement(
-        _reactBootstrap.Row,
-        { className: 'game-detail__player' },
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 1 },
-            player.number
-        ),
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 5 },
-            player.first_name,
-            ' ',
-            player.last_name
-        ),
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 6, className: 'actions' },
-            _react2.default.createElement(
+    var getRosterEditButtons = function getRosterEditButtons() {
+        if (isCaptain && gameState === _GameStateTypes.GAME_STATE_FILLING_ROSTER) {
+            return _react2.default.createElement(
                 _reactBootstrap.Button,
                 { bsStyle: 'danger', bsSize: 'small', onClick: function onClick() {
                         return onClickRemovePlayerFromRoaster(player.id);
                     } },
                 'Odebrat ze soupisky'
-            )
+            );
+        } else {
+            return '';
+        }
+    };
+
+    return _react2.default.createElement(
+        'tr',
+        null,
+        _react2.default.createElement(
+            'td',
+            null,
+            player.number,
+            '.'
+        ),
+        _react2.default.createElement(
+            'td',
+            null,
+            player.first_name,
+            ' ',
+            player.last_name
+        ),
+        _react2.default.createElement(
+            'td',
+            null,
+            getGameEventButtons(),
+            getRosterEditButtons()
         )
     );
 };
@@ -50143,27 +50094,26 @@ var _GameDetailRosterAddPlayer = __webpack_require__(455);
 
 var _GameDetailRosterAddPlayer2 = _interopRequireDefault(_GameDetailRosterAddPlayer);
 
-var _LoadingSpinner = __webpack_require__(56);
-
-var _LoadingSpinner2 = _interopRequireDefault(_LoadingSpinner);
+var _GameStateTypes = __webpack_require__(458);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GameDetailRoster = function GameDetailRoster(props) {
     var isCaptain = props.isCaptain,
-        myPlayers = props.myPlayers,
-        playersOnRoster = props.playersOnRoster;
+        gameState = props.gameState;
 
 
     var renderAddPlayer = function renderAddPlayer() {
+        if (gameState !== _GameStateTypes.GAME_STATE_FILLING_ROSTER) {
+            return '';
+        }
+
         if (!isCaptain) {
             return _react2.default.createElement(
-                _reactBootstrap.Alert,
+                _reactBootstrap.Label,
                 { bsStyle: 'warning' },
                 'Nejste kapit\xE1n tohoto t\xFDmu'
             );
-        } else if (playersOnRoster === false || myPlayers === false) {
-            return _react2.default.createElement(_LoadingSpinner2.default, { text: 'Na\u010D\xEDt\xE1m hr\xE1\u010De pro soupisku' });
         } else {
             return _react2.default.createElement(_GameDetailRosterAddPlayer2.default, props);
         }
@@ -50335,6 +50285,23 @@ var getFieldLocations = exports.getFieldLocations = function getFieldLocations()
         });
     };
 };
+
+/***/ }),
+/* 458 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var GAME_STATE_FILLING_ROSTER = exports.GAME_STATE_FILLING_ROSTER = 'filling_roster';
+var GAME_STATE_PREPARED = exports.GAME_STATE_PREPARED = 'prepared';
+var GAME_STATE_PLAYING = exports.GAME_STATE_PLAYING = 'playing';
+var GAME_STATE_PAUSED = exports.GAME_STATE_PAUSED = 'paused';
+var GAME_STATE_FINISHED = exports.GAME_STATE_FINISHED = 'finished';
+var GAME_STATE_CLOSED = exports.GAME_STATE_CLOSED = 'closed';
 
 /***/ })
 /******/ ]);
