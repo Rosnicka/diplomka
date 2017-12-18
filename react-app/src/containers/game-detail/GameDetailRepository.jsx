@@ -7,6 +7,10 @@ import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import GameDetailEventList from "../../components/game-detail/GameDetailEventList";
 import GameDetailPrepareRoster from "../../components/game-detail/GameDetailPrepareRoster";
 import {addPlayerToGame, removePlayerFromGame} from "../../actions/game-detail/GameDetailActions";
+import GameDetailControls from "../../components/game-detail/GameDetailControls";
+import GameDetailHeader from "../../components/game-detail/GameDetailHeader";
+import GameDetailRoasterPlayerList from "../../components/game-detail/player-roster/GameDetailRosterPlayerList";
+import GameDetailPlayerRoster from "../../components/game-detail/player-roster/GameDetailRoster";
 
 const mapStateToProps = (state) => {
     return {
@@ -33,91 +37,53 @@ const mapDispatchToProps = (dispatch) => {
 const GameDetailRepository = (props) => {
     const {gameHeader, homePlayers, hostPlayers, gameEvents, myPlayers, myTeam, onSelectAddPlayer, onClickRemovePlayerFromRoaster} = props;
 
-    const loadPlayers = (players, loadingText) => {
-        if (players === false) {
-            return <LoadingSpinner text={loadingText}/>
-        }
-
-        {
-            players.map(player => {
-                return (
-                    <GameDetailPlayerElement key={player.id} player={player}/>
-                )
-            })
-        }
-    }
-
     const homeTeamName = () => (gameHeader !== false ? gameHeader.home.name : '')
     const hostTeamName = () => (gameHeader !== false ? gameHeader.host.name : '')
 
-    const homeTeamRoster = () => {
-        if (gameHeader.home === undefined || myTeam.id === undefined || homePlayers === false || myPlayers === false) {
-            return <LoadingSpinner text="Načítám soupisky"/>
-        } else if (myPlayers !== false && gameHeader.home.id === myTeam.id) {
-            return <GameDetailPrepareRoster myPlayers={myPlayers} playersOnRoster={homePlayers}
-                                            onSelectAddPlayer={onSelectAddPlayer}
-                                            onClickRemovePlayerFromRoaster={onClickRemovePlayerFromRoaster}/>
-        }
-        return 'Nejste kapitan domacího týmu';
+    const isLoaded = () => {
+        return !(
+            gameHeader === false ||
+            homePlayers === false ||
+            hostPlayers === false ||
+            myTeam.id === undefined
+        )
     }
 
-    const hostTeamRoster = () => {
-        if (gameHeader.home === undefined || myTeam.id === undefined || hostPlayers === false || myPlayers === false) {
-            return <LoadingSpinner text="Načítám soupisky"/>
-        } else if (myPlayers !== false && myTeam.id !== undefined && gameHeader.host.id === myTeam.id) {
-            return <GameDetailPrepareRoster myPlayers={myPlayers} playersOnRoster={hostPlayers}
-                                            onSelectAddPlayer={onSelectAddPlayer}
-                                            onClickRemovePlayerFromRoaster={onClickRemovePlayerFromRoaster}/>
+    const isHomeTeamCaptain = () => {
+        return (gameHeader.home.id === myTeam.id)
+    }
+
+    const isHostTeamCaptain = () => {
+        return (gameHeader.host.id === myTeam.id)
+    }
+
+    const renderPlayerRoster = () => {
+        if (!isLoaded()) {
+            return (
+                <LoadingSpinner text="Načítám soupisky hráčů"/>
+            )
+        } else {
+            return (
+                <Row>
+                    <Col xs={6} className="game-detail__team-roster">
+                        <GameDetailPlayerRoster isCaptain={isHomeTeamCaptain()}
+                                                playersOnRoster={homePlayers} {...props} />
+                    </Col>
+                    <Col xs={6} className="game-detail__team-roster">
+                        <GameDetailPlayerRoster isCaptain={isHostTeamCaptain()}
+                                                playersOnRoster={hostPlayers} {...props} />
+                    </Col>
+                </Row>
+            )
         }
-        return 'Nejste kapitan hostujiciho týmu';
     }
 
     return (
         <div>
-            <Col xs={6} xsOffset={3} className="text-center">
-                <button className="btn btn-info">Pozastavit zápas</button>
-                <button className="btn btn-danger">Ukončit zápas</button>
-            </Col>
+            <GameDetailControls/>
             <Col xs={12} className="game-detail">
-                <Row>
-                    <Col xs={12} className="game-detail__header">
-                        <Row className="game-stage">
-                            1. poločas
-                        </Row>
-                        <Row className="timer">
-                            (21:33)
-                        </Row>
-                        <Row className="score-board">
-                            <Col xs={4} className="score-board__team score-board__team--home">
-                                <div className="score-board__team-name">{homeTeamName()}</div>
-                                <div className="score-board__local">Domácí</div>
-                            </Col>
-                            <Col xs={4} className="score-board__results">
-                                2:1
-                            </Col>
-                            <Col xs={4} className="score-board__team score-board__team--visitors">
-                                <div className="score-board__team-name">{hostTeamName()}</div>
-                                <div className="score-board__local">Hosté</div>
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs={6}>
-                        {homeTeamRoster()}
-                    </Col>
-                    <Col xs={6}>
-                        {hostTeamRoster()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs={6} className="game-detail__team-roster">
-                        {loadPlayers(homePlayers, 'Načítám hráče domácích')}
-                    </Col>
-                    <Col xs={6} className="game-detail__team-roster">
-                        {loadPlayers(hostPlayers, 'Načítám hráče hostů')}
-                    </Col>
-                </Row>
+                <GameDetailHeader homeTeamName={homeTeamName()} hostTeamName={hostTeamName()}/>
+                {renderPlayerRoster()}
                 <GameDetailEventList events={gameEvents}/>
             </Col>
         </div>

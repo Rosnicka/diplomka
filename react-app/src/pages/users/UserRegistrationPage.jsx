@@ -1,7 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {loginUser} from "../../actions/users/UsersActions";
+import {registerUser} from "../../actions/users/UsersActions";
 import RegistrationForm from "../../forms/RegistrationForm";
+import {Col} from 'react-bootstrap'
 
 const mapStateToProps = (state) => {
     return {}
@@ -10,7 +11,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onSubmitRegistrationForm: (values) => {
-            dispatch(loginUser(values.username, values.password));
+            dispatch(registerUser(values));
         }
     };
 };
@@ -19,10 +20,12 @@ const UserRegistrationPage = (props) => {
     const {onSubmitRegistrationForm} = props;
 
     return (
-        <div>
+        <Col xs={8} xsOffset={2} className="user-login-page">
             <h1>Registrace uživatele</h1>
-            <RegistrationForm onSubmitRegistrationForm={onSubmitRegistrationForm}/>
-        </div>
+            <Col xs={8} xsOffset={2}>
+                <RegistrationForm onSubmitRegistrationForm={onSubmitRegistrationForm}/>
+            </Col>
+        </Col>
     );
 }
 

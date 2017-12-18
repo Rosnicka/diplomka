@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {Form, Text, Password} from 'react-form'
+import {Button} from 'react-bootstrap'
+import {LinkContainer} from 'react-router-bootstrap';
 
 class LoginForm extends Component {
     render() {
@@ -17,7 +19,10 @@ class LoginForm extends Component {
                             <label htmlFor="password">Heslo</label>
                             <Text className="form-control" field="password" id="password" type="password"/>
                         </div>
-                        <button type="submit" className="btn btn-primary">Přihlásit se</button>
+                        <button type="submit" className="btn btn-success">Přihlásit se</button>
+                        <LinkContainer to={'/registrace'}>
+                            <Button bsStyle="info">Registrovat se</Button>
+                        </LinkContainer>
                     </form>
                 )}
             </Form>

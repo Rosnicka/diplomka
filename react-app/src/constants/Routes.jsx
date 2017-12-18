@@ -7,6 +7,7 @@ export const FIELD_LOCATIONS_URL = '/api/v1/field-locations';
 
 export const LOGGED_USER_URL = '/api/v1/users/logged'
 export const LOGIN_USER_URL = '/api/v1/users/login'
+export const REGISTER_USER_URL = '/api/v1/users/register'
 
 export const getGameByIdUrl = (gameId) => {
     return GAMES_URL + '/' + gameId;

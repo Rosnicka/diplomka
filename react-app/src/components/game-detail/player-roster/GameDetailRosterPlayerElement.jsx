@@ -1,7 +1,7 @@
 import React from 'react';
 import {Col, Row, Button} from 'react-bootstrap'
 
-const GameDetailRoasterPlayerElement = (props) => {
+const GameDetailRosterPlayerElement = (props) => {
     const {player, onClickRemovePlayerFromRoaster} = props;
 
     return (
@@ -15,4 +15,4 @@ const GameDetailRoasterPlayerElement = (props) => {
     );
 };
 
-export default GameDetailRoasterPlayerElement;
+export default GameDetailRosterPlayerElement;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {DropdownButton, MenuItem} from 'react-bootstrap'
-import GameDetailRoasterPlayerList from "./GameDetailRoasterPlayerList";
+import GameDetailRoasterPlayerList from "./player-roster/GameDetailRosterPlayerList";
 
 const GameDetailPrepareRoster = (props) => {
     const {myPlayers, playersOnRoster, onSelectAddPlayer, onClickRemovePlayerFromRoaster} = props;
@@ -11,15 +11,27 @@ const GameDetailPrepareRoster = (props) => {
         return playerFoundOnRoaster === undefined
     });
 
-    return (
-        <div>
-            <DropdownButton  bsStyle="success" title='Přidat hráče do soupisky' id={'select-player'}
-                             onSelect={(key) => onSelectAddPlayer(key)}>
+    const dropdownButton = () => {
+        if (playersOptions.length === 0) {
+            return '';
+        }
+
+        return (
+            <DropdownButton bsStyle="success" title='Přidat hráče do soupisky' id={'select-player'}
+                            onSelect={(key) => onSelectAddPlayer(key)}>
                 {playersOptions.map((player, index) => {
-                    return <MenuItem key={player.id} eventKey={player.id}>{player.first_name} {player.last_name}</MenuItem>
+                    return <MenuItem key={player.id}
+                                     eventKey={player.id}>{player.first_name} {player.last_name}</MenuItem>
                 })}
             </DropdownButton>
-            <GameDetailRoasterPlayerList playersOnRoster={playersOnRoster} onClickRemovePlayerFromRoaster={onClickRemovePlayerFromRoaster}/>
+        )
+    }
+
+    return (
+        <div>
+            {dropdownButton()}
+            <GameDetailRoasterPlayerList playersOnRoster={playersOnRoster}
+                                         onClickRemovePlayerFromRoaster={onClickRemovePlayerFromRoaster}/>
         </div>
     );
 };

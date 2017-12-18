@@ -27,6 +27,13 @@ class RouterFactory
             ],
         ], IResourceRouter::POST);
 
+        $router[] = new ResourceRoute('api/v1/users/register', [
+            'presenter' => 'Auth',
+            'action' => [
+                IResourceRouter::POST => 'register',
+            ],
+        ], IResourceRouter::POST);
+
         $router[] = new ResourceRoute('api/v1/users/logged', [
             'presenter' => 'Auth',
             'action' => [

@@ -63,6 +63,9 @@ body {
   text-align: center; }
   .user-login-page input {
     text-align: center; }
+  .user-login-page .btn {
+    width: 100%;
+    margin-bottom: 10px; }
 
 /* ----------------- Variables -------------------- */
 /* ----------------- Input styles ----------------- */

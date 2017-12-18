@@ -58,4 +58,21 @@ class AuthPresenter extends ResourcePresenter
         $user->logout(true);
         $this->resource->action = true;
     }
+
+    public function actionRegister()
+    {
+        $data = $this->getInput()->getData();
+        $pwd = Passwords::hash($data['password']);
+
+        $user = new User();
+        $user->setFirstName($data['first_name']);
+        $user->setLastName($data['last_name']);
+        $user->setEmail($data['email']);
+        $user->setPassword($pwd);
+
+        $this->doctrine->persist($user);
+        $this->doctrine->flush();
+
+        $this->resource->data = true;
+    }
 }

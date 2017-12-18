@@ -15,6 +15,14 @@ use Nette\DateTime;
  */
 class Game extends BaseEntity
 {
+    const GAME_STATE_FILLING_ROSTER = 'filling_roster';
+    const GAME_STATE_PREPARED = 'prepared';
+    const GAME_STATE_PLAYING = 'playing';
+    const GAME_STATE_PAUSED = 'paused';
+    const GAME_STATE_FINISHED = 'finished';
+    const GAME_STATE_CLOSED = 'closed';
+
+
     /**
      * @ORM\Column(type="integer")
      * @var int
