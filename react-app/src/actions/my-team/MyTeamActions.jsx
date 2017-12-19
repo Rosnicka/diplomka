@@ -94,7 +94,6 @@ export const getMyGamesToPlay = (teamId) => dispatch => {
             let games = [];
             if (data.data !== false) {
                 games = data.data;
-                console.log(games);
             }
             dispatch(receiveMyGamesToPlay(games))
             // dispatch(isFetchingTeam(false))
@@ -110,7 +109,6 @@ export const getMyGamesAsReferee = (teamId) => dispatch => {
             let games = [];
             if (data.data !== false) {
                 games = data.data;
-                console.log(games);
             }
             dispatch(receiveMyGamesAsReferee(games))
             // dispatch(isFetchingTeam(false))

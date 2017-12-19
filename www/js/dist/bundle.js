@@ -5861,7 +5861,6 @@ var getMyGamesToPlay = exports.getMyGamesToPlay = function getMyGamesToPlay(team
                 var games = [];
                 if (data.data !== false) {
                     games = data.data;
-                    console.log(games);
                 }
                 dispatch(receiveMyGamesToPlay(games));
                 // dispatch(isFetchingTeam(false))
@@ -5879,7 +5878,6 @@ var getMyGamesAsReferee = exports.getMyGamesAsReferee = function getMyGamesAsRef
                 var games = [];
                 if (data.data !== false) {
                     games = data.data;
-                    console.log(games);
                 }
                 dispatch(receiveMyGamesAsReferee(games));
                 // dispatch(isFetchingTeam(false))
@@ -50694,7 +50692,12 @@ var Stopwatch = function (_Component) {
     function Stopwatch(props) {
         _classCallCheck(this, Stopwatch);
 
-        return _possibleConstructorReturn(this, (Stopwatch.__proto__ || Object.getPrototypeOf(Stopwatch)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Stopwatch.__proto__ || Object.getPrototypeOf(Stopwatch)).call(this, props));
+
+        _this.state = {
+            intervalId: null
+        };
+        return _this;
     }
 
     _createClass(Stopwatch, [{

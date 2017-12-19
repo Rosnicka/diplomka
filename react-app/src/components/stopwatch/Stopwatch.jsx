@@ -11,6 +11,9 @@ import {GAME_HALF_TIME_DURATION_IN_MINUTES} from "../../constants/GameHalfTime";
 class Stopwatch extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            intervalId: null
+        }
     }
 
     componentDidMount() {
