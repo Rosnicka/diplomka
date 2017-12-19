@@ -11591,6 +11591,9 @@ var GD_ELAPSED_SECONDS_TICK = exports.GD_ELAPSED_SECONDS_TICK = 'GD_ELAPSED_SECO
 var GD_RECEIVE_GAME_STATE = exports.GD_RECEIVE_GAME_STATE = 'GD_RECEIVE_GAME_STATE';
 var GD_RESET_GAME_STATE = exports.GD_RESET_GAME_STATE = 'GD_RESET_GAME_STATE';
 
+var GD_LAST_START_TIME_RESET = exports.GD_LAST_START_TIME_RESET = 'GD_LAST_START_TIME_RESET';
+var GD_LAST_START_TIME_RECEIVE = exports.GD_LAST_START_TIME_RECEIVE = 'GD_LAST_START_TIME_RECEIVE';
+
 /***/ }),
 /* 188 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -12896,7 +12899,7 @@ var GAME_EVENT_TYPE_RED_CARD = exports.GAME_EVENT_TYPE_RED_CARD = 'red_card';
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.removePlayerFromGame = exports.addPlayerToGame = exports.loadGameDetail = exports.loadGameDetailEvents = exports.resetGameDetail = exports.addElapsedSecond = undefined;
+exports.setLastStartGameTime = exports.changeGameState = exports.removePlayerFromGame = exports.addPlayerToGame = exports.loadGameDetail = exports.loadGameDetailEvents = exports.resetGameDetail = exports.addElapsedSecond = undefined;
 
 var _Routes = __webpack_require__(52);
 
@@ -12904,7 +12907,15 @@ var _GameDetailActionTypes = __webpack_require__(187);
 
 var _FetchMethods = __webpack_require__(51);
 
+var _moment = __webpack_require__(562);
+
+var _moment2 = _interopRequireDefault(_moment);
+
 var _DispatchingApp = __webpack_require__(58);
+
+var _GameStateTypes = __webpack_require__(116);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var receiveGameHeader = function receiveGameHeader(game) {
     return {
@@ -13022,6 +13033,19 @@ var resetGameState = function resetGameState() {
     };
 };
 
+var receiveGameLastStartTime = function receiveGameLastStartTime(datetime) {
+    return {
+        type: _GameDetailActionTypes.GD_LAST_START_TIME_RECEIVE,
+        datetime: datetime
+    };
+};
+
+var resetGameLastStartTime = function resetGameLastStartTime() {
+    return {
+        type: _GameDetailActionTypes.GD_LAST_START_TIME_RESET
+    };
+};
+
 var resetGameDetail = exports.resetGameDetail = function resetGameDetail() {
     return function (dispatch) {
         dispatch(resetGameHeader());
@@ -13030,6 +13054,7 @@ var resetGameDetail = exports.resetGameDetail = function resetGameDetail() {
         dispatch(resetGameEvents());
         dispatch(resetElapsedSeconds());
         dispatch(resetGameState());
+        dispatch(resetGameLastStartTime());
     };
 };
 
@@ -13058,9 +13083,17 @@ var loadGameDetail = exports.loadGameDetail = function loadGameDetail(gameId) {
                     game = data.data;
                 }
 
+                var secondsFromLastStart = 0;
+                if (game.state === _GameStateTypes.GAME_STATE_PLAYING) {
+                    var start = (0, _moment2.default)(game.last_start_datetime);
+                    var now = (0, _moment2.default)();
+                    secondsFromLastStart = _moment2.default.duration(now.diff(start)).asSeconds();
+                }
+
                 dispatch(receiveGameHeader(game));
                 dispatch(receiveGameState(game.state));
-                dispatch(receiveElapsedSeconds(game.elapsed_seconds));
+                dispatch(receiveGameLastStartTime(game.last_start_datetime));
+                dispatch(receiveElapsedSeconds(game.elapsed_seconds + secondsFromLastStart));
                 dispatch(loadGameDetailHomePlayers(game.id, game.home.id));
                 dispatch(loadGameDetailHostPlayers(game.id, game.host.id));
             });
@@ -13139,6 +13172,52 @@ var removePlayerFromGame = exports.removePlayerFromGame = function removePlayerF
                     } else {
                         dispatch(removeHostPlayer(playerId));
                     }
+                }
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+};
+
+var changeGameState = exports.changeGameState = function changeGameState(gameId, newState) {
+    return function (dispatch) {
+        var state = _DispatchingApp.store.getState();
+        var values = void 0;
+        if (newState === _GameStateTypes.GAME_STATE_PAUSED || newState === _GameStateTypes.GAME_STATE_FINISHED) {
+            values = {
+                state: newState,
+                elapsedSeconds: state.gameDetail.gameElapsedSeconds !== false ? state.gameDetail.gameElapsedSeconds : 0
+            };
+        } else {
+            values = {
+                state: newState
+            };
+        }
+
+        (0, _FetchMethods.fetchPut)((0, _Routes.getGameByIdUrl)(gameId), values).then(function (response) {
+            response.json().then(function (data) {
+                if (data.data !== true) {
+                    dispatch(receiveGameState(data.data.state));
+                }
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+};
+
+var setLastStartGameTime = exports.setLastStartGameTime = function setLastStartGameTime(gameId) {
+    return function (dispatch) {
+        var now = (0, _moment2.default)();
+        var datetime = now.format('YYYY-MM-DD HH:mm:ss');
+        (0, _FetchMethods.fetchPut)((0, _Routes.getGameByIdUrl)(gameId), {
+            lastStartDatetime: datetime
+        }).then(function (response) {
+            response.json().then(function (data) {
+                console.log(data.data);
+                if (data.data !== false) {
+                    dispatch(receiveGameLastStartTime(data.data.last_start_datetime));
                 }
             });
         }).catch(function (error) {
@@ -43614,7 +43693,21 @@ var gameElapsedSeconds = function gameElapsedSeconds() {
         case _GameDetailActionTypes.GD_ELAPSED_SECONDS_RECEIVE:
             return action.seconds;
         case _GameDetailActionTypes.GD_ELAPSED_SECONDS_TICK:
-            return state + 1;
+            return state === false ? 1 : state + 1;
+        default:
+            return state;
+    }
+};
+
+var gameLastStartTime = function gameLastStartTime() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _GameDetailActionTypes.GD_LAST_START_TIME_RESET:
+            return false;
+        case _GameDetailActionTypes.GD_LAST_START_TIME_RECEIVE:
+            return action.datetime;
         default:
             return state;
     }
@@ -43626,7 +43719,8 @@ var gameDetailReducer = (0, _redux.combineReducers)({
     hostPlayers: hostPlayers,
     gameEvents: gameEvents,
     gameState: gameState,
-    gameElapsedSeconds: gameElapsedSeconds
+    gameElapsedSeconds: gameElapsedSeconds,
+    gameLastStartTime: gameLastStartTime
 });
 
 exports.default = gameDetailReducer;
@@ -49594,6 +49688,8 @@ var _GameDetailRoster = __webpack_require__(451);
 
 var _GameDetailRoster2 = _interopRequireDefault(_GameDetailRoster);
 
+var _GameStateTypes = __webpack_require__(116);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
@@ -49605,7 +49701,8 @@ var mapStateToProps = function mapStateToProps(state) {
         gameEvents: state.gameDetail.gameEvents,
         myTeam: state.myTeam.myTeam,
         gameElapsedSeconds: state.gameDetail.gameElapsedSeconds,
-        gameState: state.gameDetail.gameState
+        gameState: state.gameDetail.gameState,
+        gameLastStartTime: state.gameDetail.gameLastStartTime
     };
 };
 
@@ -49622,16 +49719,18 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             console.log(eventType);
         },
         onClickStartGame: function onClickStartGame(gameId) {
-            console.log('zahajit zapas');
+            dispatch((0, _GameDetailActions.setLastStartGameTime)(gameId));
+            dispatch((0, _GameDetailActions.changeGameState)(gameId, _GameStateTypes.GAME_STATE_PLAYING));
         },
         onClickPauseGame: function onClickPauseGame(gameId) {
-            console.log('pausa zapas');
+            dispatch((0, _GameDetailActions.changeGameState)(gameId, _GameStateTypes.GAME_STATE_PAUSED));
         },
         onClickResumeGame: function onClickResumeGame(gameId) {
-            console.log('znovu spustit zapas');
+            dispatch((0, _GameDetailActions.setLastStartGameTime)(gameId));
+            dispatch((0, _GameDetailActions.changeGameState)(gameId, _GameStateTypes.GAME_STATE_PLAYING));
         },
         onClickEndGame: function onClickEndGame(gameId) {
-            console.log('ukoncit zapas');
+            dispatch((0, _GameDetailActions.changeGameState)(gameId, _GameStateTypes.GAME_STATE_FINISHED));
         },
         onGameIntervalTick: function onGameIntervalTick() {
             dispatch((0, _GameDetailActions.addElapsedSecond)());
@@ -49644,7 +49743,10 @@ var GameDetailRepository = function GameDetailRepository(props) {
         homePlayers = props.homePlayers,
         hostPlayers = props.hostPlayers,
         gameEvents = props.gameEvents,
-        myTeam = props.myTeam;
+        myTeam = props.myTeam,
+        gameLastStartTime = props.gameLastStartTime,
+        gameState = props.gameState,
+        gameElapsedSeconds = props.gameElapsedSeconds;
 
 
     var homeTeamName = function homeTeamName() {
@@ -49655,7 +49757,7 @@ var GameDetailRepository = function GameDetailRepository(props) {
     };
 
     var isLoaded = function isLoaded() {
-        return !(gameHeader === false || homePlayers === false || hostPlayers === false || myTeam.id === undefined);
+        return !(gameHeader === false || homePlayers === false || hostPlayers === false || gameElapsedSeconds === false || gameState === false || gameLastStartTime === false || myTeam.id === undefined);
     };
 
     var isHomeTeamCaptain = function isHomeTeamCaptain() {
@@ -49670,11 +49772,23 @@ var GameDetailRepository = function GameDetailRepository(props) {
         return gameHeader.referee.id === myTeam.id;
     };
 
-    var renderPlayerRoster = function renderPlayerRoster() {
-        if (!isLoaded()) {
-            return _react2.default.createElement(_LoadingSpinner2.default, { text: 'Na\u010D\xEDt\xE1m soupisky hr\xE1\u010D\u016F' });
-        } else {
-            return _react2.default.createElement(
+    if (!isLoaded()) {
+        return _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(_LoadingSpinner2.default, { text: 'Na\u010D\xEDt\xE1m detail z\xE1pasu' })
+        );
+    }
+
+    return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(_GameDetailControls2.default, props),
+        _react2.default.createElement(
+            _reactBootstrap.Col,
+            { xs: 12, className: 'game-detail' },
+            _react2.default.createElement(_GameDetailHeader2.default, _extends({ homeTeamName: homeTeamName(), hostTeamName: hostTeamName() }, props)),
+            _react2.default.createElement(
                 _reactBootstrap.Row,
                 null,
                 _react2.default.createElement(
@@ -49691,19 +49805,7 @@ var GameDetailRepository = function GameDetailRepository(props) {
                         isReferee: isReferee(),
                         playersOnRoster: hostPlayers }, props))
                 )
-            );
-        }
-    };
-
-    return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(_GameDetailControls2.default, props),
-        _react2.default.createElement(
-            _reactBootstrap.Col,
-            { xs: 12, className: 'game-detail' },
-            _react2.default.createElement(_GameDetailHeader2.default, _extends({ homeTeamName: homeTeamName(), hostTeamName: hostTeamName() }, props)),
-            renderPlayerRoster(),
+            ),
             _react2.default.createElement(_GameDetailEventList2.default, { events: gameEvents })
         )
     );
@@ -49891,6 +49993,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var GameDetailControls = function GameDetailControls(props) {
     var gameHeader = props.gameHeader,
+        gameState = props.gameState,
         onClickStartGame = props.onClickStartGame,
         onClickPauseGame = props.onClickPauseGame,
         onClickResumeGame = props.onClickResumeGame,
@@ -49898,59 +50001,59 @@ var GameDetailControls = function GameDetailControls(props) {
 
 
     var btnStartGame = function btnStartGame() {
-        if (gameHeader.state !== _GameStateTypes.GAME_STATE_PREPARED) {
+        if (gameState === _GameStateTypes.GAME_STATE_PREPARED) {
+            return _react2.default.createElement(
+                'button',
+                { className: 'btn btn-success', onClick: function onClick() {
+                        return onClickStartGame(gameHeader.id);
+                    } },
+                'Zah\xE1jit z\xE1pas'
+            );
+        } else {
             return '';
         }
-
-        return _react2.default.createElement(
-            'button',
-            { className: 'btn btn-success', onClick: function onClick() {
-                    return onClickStartGame(gameHeader.id);
-                } },
-            'Zah\xE1jit z\xE1pas'
-        );
     };
 
     var btnPauseGame = function btnPauseGame() {
-        if (gameHeader.state !== _GameStateTypes.GAME_STATE_PLAYING) {
+        if (gameState === _GameStateTypes.GAME_STATE_PLAYING) {
+            return _react2.default.createElement(
+                'button',
+                { className: 'btn btn-info', onClick: function onClick() {
+                        return onClickPauseGame(gameHeader.id);
+                    } },
+                'Pozastavit z\xE1pas'
+            );
+        } else {
             return '';
         }
-
-        return _react2.default.createElement(
-            'button',
-            { className: 'btn btn-info', onClick: function onClick() {
-                    return onClickPauseGame(gameHeader.id);
-                } },
-            'Pozastavit z\xE1pas'
-        );
     };
 
     var btnResumeGame = function btnResumeGame() {
-        if (gameHeader.state !== _GameStateTypes.GAME_STATE_PAUSED) {
+        if (gameState === _GameStateTypes.GAME_STATE_PAUSED) {
+            return _react2.default.createElement(
+                'button',
+                { className: 'btn btn-success', onClick: function onClick() {
+                        return onClickResumeGame(gameHeader.id);
+                    } },
+                'Pokra\u010Dovat v z\xE1pase'
+            );
+        } else {
             return '';
         }
-
-        return _react2.default.createElement(
-            'button',
-            { className: 'btn btn-success', onClick: function onClick() {
-                    return onClickResumeGame(gameHeader.id);
-                } },
-            'Pokra\u010Dovat v z\xE1pase'
-        );
     };
 
     var btnEndGame = function btnEndGame() {
-        if (gameHeader.state !== _GameStateTypes.GAME_STATE_PLAYING || gameState !== _GameStateTypes.GAME_STATE_PAUSED) {
+        if (gameState === _GameStateTypes.GAME_STATE_PLAYING || gameState === _GameStateTypes.GAME_STATE_PAUSED) {
+            return _react2.default.createElement(
+                'button',
+                { className: 'btn btn-danger', onClick: function onClick() {
+                        return onClickEndGame(gameHeader.id);
+                    } },
+                'Ukon\u010Dit z\xE1pas'
+            );
+        } else {
             return '';
         }
-
-        return _react2.default.createElement(
-            'button',
-            { className: 'btn btn-danger', onClick: function onClick() {
-                    return onClickEndGame(gameHeader.id);
-                } },
-            'Ukon\u010Dit z\xE1pas'
-        );
     };
 
     return _react2.default.createElement(
@@ -49990,9 +50093,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var GameDetailHeader = function GameDetailHeader(props) {
     var homeTeamName = props.homeTeamName,
-        hostTeamName = props.hostTeamName,
-        gameElapsedSeconds = props.gameElapsedSeconds,
-        onGameIntervalTick = props.onGameIntervalTick;
+        hostTeamName = props.hostTeamName;
 
 
     return _react2.default.createElement(
@@ -50001,16 +50102,7 @@ var GameDetailHeader = function GameDetailHeader(props) {
         _react2.default.createElement(
             _reactBootstrap.Col,
             { xs: 12, className: 'game-detail__header' },
-            _react2.default.createElement(
-                _reactBootstrap.Row,
-                { className: 'game-stage' },
-                '1. polo\u010Das'
-            ),
-            _react2.default.createElement(
-                _reactBootstrap.Row,
-                { className: 'timer' },
-                _react2.default.createElement(_Stopwatch2.default, { gameElapsedSeconds: gameElapsedSeconds, onGameIntervalTick: onGameIntervalTick, startDatetime: '2017-12-18 21:00' })
-            ),
+            _react2.default.createElement(_Stopwatch2.default, props),
             _react2.default.createElement(
                 _reactBootstrap.Row,
                 { className: 'score-board' },
@@ -50578,11 +50670,15 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactBootstrap = __webpack_require__(12);
+
 var _moment = __webpack_require__(562);
 
 var _moment2 = _interopRequireDefault(_moment);
 
 var _GameStateTypes = __webpack_require__(116);
+
+var _GameHalfTime = __webpack_require__(684);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -50606,30 +50702,36 @@ var Stopwatch = function (_Component) {
         value: function componentDidMount() {
             var _this2 = this;
 
-            this.interval = setInterval(function () {
+            var intervalId = setInterval(function () {
                 if (_this2.props.gameState === _GameStateTypes.GAME_STATE_PLAYING && _this2.props.gameElapsedSeconds !== false) {
                     _this2.props.onGameIntervalTick();
                 }
             }, 1000);
+
+            this.setState({
+                intervalId: intervalId
+            });
         }
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
-            clearInterval(this.interval);
+            clearInterval(this.state.intervalId);
+        }
+    }, {
+        key: 'getGameDuration',
+        value: function getGameDuration() {
+            var duration = _moment2.default.duration();
+            if (this.props.gameElapsedSeconds !== false) {
+                duration.add(this.props.gameElapsedSeconds, 'seconds');
+            }
+            return duration;
         }
     }, {
         key: 'renderTime',
         value: function renderTime() {
-            if (this.props.gameElapsedSeconds === false) {
+            var duration = this.getGameDuration();
+            if (duration.asSeconds() === 0) {
                 return '';
-            }
-
-            var duration = _moment2.default.duration(this.props.gameElapsedSeconds, 'seconds');
-
-            if (this.props.gameState === _GameStateTypes.GAME_STATE_PLAYING) {
-                var start = (0, _moment2.default)(this.props.startDatetime);
-                var now = (0, _moment2.default)();
-                duration.add(now.diff(start));
             }
 
             var minutes = duration.minutes() < 10 ? '0' + duration.minutes() : duration.minutes();
@@ -50638,12 +50740,43 @@ var Stopwatch = function (_Component) {
             return minutes + ':' + seconds;
         }
     }, {
+        key: 'renderGameHalfLabel',
+        value: function renderGameHalfLabel() {
+            var duration = this.getGameDuration();
+            var gameState = this.props.gameState;
+
+
+            if (gameState === _GameStateTypes.GAME_STATE_FINISHED || gameState === _GameStateTypes.GAME_STATE_CLOSED) {
+                return 'konec zápasu';
+            } else if (gameState === _GameStateTypes.GAME_STATE_PREPARED) {
+                return 'čeká na zahájení';
+            } else if (gameState === _GameStateTypes.GAME_STATE_FILLING_ROSTER) {
+                return 'čeká na vyplnění soupisky';
+            } else if (duration.asMinutes() <= _GameHalfTime.GAME_HALF_TIME_DURATION_IN_MINUTES) {
+                return '1. poločas';
+            } else if (duration.asMinutes() <= 2 * _GameHalfTime.GAME_HALF_TIME_DURATION_IN_MINUTES) {
+                return '2. poločas';
+            } else if (gameState === _GameStateTypes.GAME_STATE_PAUSED || gameState === _GameStateTypes.GAME_STATE_PLAYING) {
+                return 'prodloužení';
+            }
+            return '';
+        }
+    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
                 'div',
                 null,
-                this.renderTime()
+                _react2.default.createElement(
+                    _reactBootstrap.Row,
+                    { className: 'game-stage' },
+                    this.renderGameHalfLabel()
+                ),
+                _react2.default.createElement(
+                    _reactBootstrap.Row,
+                    { className: 'timer' },
+                    this.renderTime()
+                )
             );
         }
     }]);
@@ -67117,6 +67250,19 @@ webpackContext.keys = function webpackContextKeys() {
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
 webpackContext.id = 682;
+
+/***/ }),
+/* 683 */,
+/* 684 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var GAME_HALF_TIME_DURATION_IN_MINUTES = exports.GAME_HALF_TIME_DURATION_IN_MINUTES = 20;
 
 /***/ })
 /******/ ]);

@@ -3,7 +3,8 @@ import {
     GD_RECEIVE_HOME_PLAYERS, GD_RECEIVE_HOST_PLAYERS, GD_RECEIVE_GAME_HEADER, GD_RESET_GAME_HEADER,
     GD_RESET_HOME_PLAYERS, GD_RESET_HOST_PLAYERS, GD_RECEIVE_EVENTS, GD_RESET_EVENTS, GD_ADD_HOME_PLAYER,
     GD_REMOVE_HOST_PLAYER, GD_REMOVE_HOME_PLAYER, GD_ADD_HOST_PLAYER, GD_ELAPSED_SECONDS_TICK,
-    GD_ELAPSED_SECONDS_RECEIVE, GD_RECEIVE_GAME_STATE, GD_RESET_GAME_STATE, GD_ELAPSED_SECONDS_RESET
+    GD_ELAPSED_SECONDS_RECEIVE, GD_RECEIVE_GAME_STATE, GD_RESET_GAME_STATE, GD_ELAPSED_SECONDS_RESET,
+    GD_LAST_START_TIME_RESET, GD_LAST_START_TIME_RECEIVE
 } from "../../constants/GameDetailActionTypes";
 
 const gameHeader = (state = false, action) => {
@@ -80,7 +81,18 @@ const gameElapsedSeconds = (state = false, action) => {
         case GD_ELAPSED_SECONDS_RECEIVE:
             return action.seconds;
         case GD_ELAPSED_SECONDS_TICK:
-            return state + 1;
+            return state === false ? 1 : state + 1;
+        default:
+            return state
+    }
+}
+
+const gameLastStartTime = (state = false, action) => {
+    switch (action.type) {
+        case GD_LAST_START_TIME_RESET:
+            return false;
+        case GD_LAST_START_TIME_RECEIVE:
+            return action.datetime;
         default:
             return state
     }
@@ -92,7 +104,8 @@ const gameDetailReducer = combineReducers({
     hostPlayers,
     gameEvents,
     gameState,
-    gameElapsedSeconds
+    gameElapsedSeconds,
+    gameLastStartTime
 });
 
 export default gameDetailReducer;

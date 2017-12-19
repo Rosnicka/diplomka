@@ -4,10 +4,14 @@ import {Col, Row} from 'react-bootstrap'
 
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import GameDetailEventList from "../../components/game-detail/GameDetailEventList";
-import {addElapsedSecond, addPlayerToGame, removePlayerFromGame} from "../../actions/game-detail/GameDetailActions";
+import {
+    addElapsedSecond, addPlayerToGame, changeGameState, removePlayerFromGame,
+    setLastStartGameTime
+} from "../../actions/game-detail/GameDetailActions";
 import GameDetailControls from "../../components/game-detail/GameDetailControls";
 import GameDetailHeader from "../../components/game-detail/GameDetailHeader";
 import GameDetailPlayerRoster from "../../components/game-detail/player-roster/GameDetailRoster";
+import {GAME_STATE_FINISHED, GAME_STATE_PAUSED, GAME_STATE_PLAYING} from "../../constants/GameStateTypes";
 
 const mapStateToProps = (state) => {
     return {
@@ -19,6 +23,7 @@ const mapStateToProps = (state) => {
         myTeam: state.myTeam.myTeam,
         gameElapsedSeconds: state.gameDetail.gameElapsedSeconds,
         gameState: state.gameDetail.gameState,
+        gameLastStartTime: state.gameDetail.gameLastStartTime
     }
 };
 
@@ -35,16 +40,18 @@ const mapDispatchToProps = (dispatch) => {
             console.log(eventType)
         },
         onClickStartGame: (gameId) => {
-            console.log('zahajit zapas');
+            dispatch(setLastStartGameTime(gameId));
+            dispatch(changeGameState(gameId, GAME_STATE_PLAYING));
         },
         onClickPauseGame: (gameId) => {
-            console.log('pausa zapas');
+            dispatch(changeGameState(gameId, GAME_STATE_PAUSED));
         },
         onClickResumeGame: (gameId) => {
-            console.log('znovu spustit zapas');
+            dispatch(setLastStartGameTime(gameId));
+            dispatch(changeGameState(gameId, GAME_STATE_PLAYING));
         },
         onClickEndGame: (gameId) => {
-            console.log('ukoncit zapas');
+            dispatch(changeGameState(gameId, GAME_STATE_FINISHED));
         },
         onGameIntervalTick: () => {
             dispatch(addElapsedSecond());
@@ -53,7 +60,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const GameDetailRepository = (props) => {
-    const {gameHeader, homePlayers, hostPlayers, gameEvents, myTeam} = props;
+    const {gameHeader, homePlayers, hostPlayers, gameEvents, myTeam, gameLastStartTime, gameState, gameElapsedSeconds} = props;
 
     const homeTeamName = () => (gameHeader !== false ? gameHeader.home.name : '')
     const hostTeamName = () => (gameHeader !== false ? gameHeader.host.name : '')
@@ -63,6 +70,9 @@ const GameDetailRepository = (props) => {
             gameHeader === false ||
             homePlayers === false ||
             hostPlayers === false ||
+            gameElapsedSeconds === false ||
+            gameState === false ||
+            gameLastStartTime === false ||
             myTeam.id === undefined
         )
     }
@@ -79,13 +89,19 @@ const GameDetailRepository = (props) => {
         return (gameHeader.referee.id === myTeam.id)
     }
 
-    const renderPlayerRoster = () => {
-        if (!isLoaded()) {
-            return (
-                <LoadingSpinner text="Načítám soupisky hráčů"/>
-            )
-        } else {
-            return (
+    if (!isLoaded()) {
+        return (
+            <div>
+                <LoadingSpinner text="Načítám detail zápasu"/>
+            </div>
+        )
+    }
+
+    return (
+        <div>
+            <GameDetailControls {...props} />
+            <Col xs={12} className="game-detail">
+                <GameDetailHeader homeTeamName={homeTeamName()} hostTeamName={hostTeamName()} {...props}/>
                 <Row>
                     <Col xs={6} className="game-detail__team-roster">
                         <GameDetailPlayerRoster isCaptain={isHomeTeamCaptain()}
@@ -98,16 +114,6 @@ const GameDetailRepository = (props) => {
                                                 playersOnRoster={hostPlayers} {...props} />
                     </Col>
                 </Row>
-            )
-        }
-    }
-
-    return (
-        <div>
-            <GameDetailControls {...props} />
-            <Col xs={12} className="game-detail">
-                <GameDetailHeader homeTeamName={homeTeamName()} hostTeamName={hostTeamName()} {...props}/>
-                {renderPlayerRoster()}
                 <GameDetailEventList events={gameEvents}/>
             </Col>
         </div>

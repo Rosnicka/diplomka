@@ -62,7 +62,6 @@ class PlayerPresenter extends ResourcePresenter
         $this->doctrine->flush();
 
         $this->resource->data = $player;
-
     }
 
     public function actionDelete()

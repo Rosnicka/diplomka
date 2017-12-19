@@ -44,6 +44,29 @@ class GamePresenter extends ResourcePresenter
         $this->resource->data = $data;
     }
 
+    public function actionUpdate()
+    {
+        $id = $this->getParameter('id');
+
+        if ($id !== null) {
+            $this->resource->data = false;
+        }
+
+        /** @var Game $game */
+        $game = $this->doctrine->getRepository(Game::getClassName())->find($id);
+        foreach ($this->getInput()->getData() as $key => $col) {
+            if ($key === 'lastStartDatetime') {
+                $game->{$key} = new \DateTime($col);
+            } else {
+                $game->{$key} = $col;
+            }
+        }
+        $this->doctrine->persist($game);
+        $this->doctrine->flush();
+
+        $this->resource->data = $game->getGameData();
+    }
+
     public function actionReadTeamPlayers()
     {
         $gameId = $this->getParameter('id');

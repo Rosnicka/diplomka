@@ -83,6 +83,7 @@ class Game extends BaseEntity
             $data[$teamMembership->relationship] = $teamMembership->team->getData();
         }
         $data['datetime'] = $this->datetime->format('Y.m.d H:m');
+        $data['last_start_datetime'] = $this->lastStartDatetime->format('Y.m.d H:m:s');
         $data['field'] = $this->field->name;
         $data['result']['home'] = 0;
         $data['result']['host'] = 2;

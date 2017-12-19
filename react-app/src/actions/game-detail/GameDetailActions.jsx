@@ -1,17 +1,19 @@
 import {
-    getGameByIdUrl, getGameEventsByGameId, getGamePlayersByGameIdUrl, getGameTeamPlayers, getRemovePlayerFromGameUrl,
-    getTeamPlayersByTeamIdUrl
+    getGameByIdUrl, getGameEventsByGameId, getGamePlayersByGameIdUrl, getGameTeamPlayers, getRemovePlayerFromGameUrl
 } from "../../constants/Routes";
 import {
     GD_ADD_HOME_PLAYER,
     GD_ADD_HOST_PLAYER, GD_ELAPSED_SECONDS_RECEIVE, GD_ELAPSED_SECONDS_RESET, GD_ELAPSED_SECONDS_TICK,
+    GD_LAST_START_TIME_RECEIVE, GD_LAST_START_TIME_RESET,
     GD_RECEIVE_EVENTS,
     GD_RECEIVE_GAME_HEADER, GD_RECEIVE_GAME_STATE, GD_RECEIVE_HOME_PLAYERS,
     GD_RECEIVE_HOST_PLAYERS, GD_REMOVE_HOME_PLAYER, GD_REMOVE_HOST_PLAYER, GD_RESET_EVENTS, GD_RESET_GAME_HEADER,
     GD_RESET_GAME_STATE
 } from "../../constants/GameDetailActionTypes";
-import {fetchDelete, fetchGet, fetchPost} from "../../utils/FetchMethods";
+import {fetchDelete, fetchGet, fetchPost, fetchPut} from "../../utils/FetchMethods";
+import moment from 'moment'
 import {store} from "../../containers/DispatchingApp";
+import {GAME_STATE_FINISHED, GAME_STATE_PAUSED, GAME_STATE_PLAYING} from "../../constants/GameStateTypes";
 
 const receiveGameHeader = game => {
     return {
@@ -129,6 +131,18 @@ const resetGameState = () => {
     }
 }
 
+const receiveGameLastStartTime = (datetime) => {
+    return {
+        type: GD_LAST_START_TIME_RECEIVE,
+        datetime: datetime
+    }
+}
+
+const resetGameLastStartTime = () => {
+    return {
+        type: GD_LAST_START_TIME_RESET,
+    }
+}
 
 export const resetGameDetail = () => dispatch => {
     dispatch(resetGameHeader());
@@ -137,6 +151,7 @@ export const resetGameDetail = () => dispatch => {
     dispatch(resetGameEvents());
     dispatch(resetElapsedSeconds());
     dispatch(resetGameState());
+    dispatch(resetGameLastStartTime());
 }
 
 export const loadGameDetailEvents = (gameId) => dispatch => {
@@ -162,9 +177,17 @@ export const loadGameDetail = (gameId) => dispatch => {
                 game = data.data;
             }
 
+            let secondsFromLastStart = 0;
+            if (game.state === GAME_STATE_PLAYING) {
+                const start = moment(game.last_start_datetime);
+                const now = moment();
+                secondsFromLastStart = moment.duration(now.diff(start)).asSeconds();
+            }
+
             dispatch(receiveGameHeader(game));
             dispatch(receiveGameState(game.state));
-            dispatch(receiveElapsedSeconds(game.elapsed_seconds));
+            dispatch(receiveGameLastStartTime(game.last_start_datetime));
+            dispatch(receiveElapsedSeconds(game.elapsed_seconds + secondsFromLastStart));
             dispatch(loadGameDetailHomePlayers(game.id, game.home.id));
             dispatch(loadGameDetailHostPlayers(game.id, game.host.id));
 
@@ -236,6 +259,48 @@ export const removePlayerFromGame = (playerId) => dispatch => {
                 } else {
                     dispatch(removeHostPlayer(playerId));
                 }
+            }
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const changeGameState = (gameId, newState) => dispatch => {
+    const state = store.getState();
+    let values;
+    if (newState === GAME_STATE_PAUSED || newState === GAME_STATE_FINISHED) {
+        values = {
+            state: newState,
+            elapsedSeconds: state.gameDetail.gameElapsedSeconds !== false ? state.gameDetail.gameElapsedSeconds : 0
+        }
+    } else {
+        values = {
+            state: newState,
+        }
+    }
+
+    fetchPut(getGameByIdUrl(gameId), values).then((response) => {
+        response.json().then((data) => {
+            if (data.data !== true) {
+                dispatch(receiveGameState(data.data.state));
+            }
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const setLastStartGameTime = (gameId) => dispatch => {
+    const now = moment();
+    const datetime = now.format('YYYY-MM-DD HH:mm:ss');
+    fetchPut(getGameByIdUrl(gameId), {
+        lastStartDatetime: datetime,
+    }).then((response) => {
+        response.json().then((data) => {
+            console.log(data.data);
+            if (data.data !== false) {
+                dispatch(receiveGameLastStartTime(data.data.last_start_datetime));
             }
         });
     }).catch(function (error) {

@@ -3,17 +3,12 @@ import {Row, Col} from 'react-bootstrap'
 import Stopwatch from "../stopwatch/Stopwatch";
 
 const GameDetailHeader = (props) => {
-    const {homeTeamName, hostTeamName, gameElapsedSeconds, onGameIntervalTick} = props;
+    const {homeTeamName, hostTeamName} = props;
 
     return (
         <Row>
             <Col xs={12} className="game-detail__header">
-                <Row className="game-stage">
-                    1. poločas
-                </Row>
-                <Row className="timer">
-                    <Stopwatch gameElapsedSeconds={gameElapsedSeconds} onGameIntervalTick={onGameIntervalTick} startDatetime="2017-12-18 21:00" />
-                </Row>
+                <Stopwatch {...props} />
                 <Row className="score-board">
                     <Col xs={4} className="score-board__team score-board__team--home">
                         <div className="score-board__team-name">{homeTeamName}</div>
