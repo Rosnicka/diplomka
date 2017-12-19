@@ -8,7 +8,6 @@ use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\TeamInGame\TeamInGame;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Nette\DateTime;
 
 /**
  * @ORM\Entity
@@ -34,6 +33,18 @@ class Game extends BaseEntity
      * @var string
      */
     protected $datetime;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @var string
+     */
+    protected $lastStartDatetime;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @var int
+     */
+    protected $elapsedSeconds;
 
     /**
      * @ORM\Column(type="string")

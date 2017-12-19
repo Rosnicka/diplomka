@@ -1,8 +1,9 @@
 import React from 'react';
 import {Row, Col} from 'react-bootstrap'
+import Stopwatch from "../stopwatch/Stopwatch";
 
 const GameDetailHeader = (props) => {
-    const {homeTeamName, hostTeamName} = props;
+    const {homeTeamName, hostTeamName, gameElapsedSeconds, onGameIntervalTick} = props;
 
     return (
         <Row>
@@ -11,7 +12,7 @@ const GameDetailHeader = (props) => {
                     1. poločas
                 </Row>
                 <Row className="timer">
-                    (21:33)
+                    <Stopwatch gameElapsedSeconds={gameElapsedSeconds} onGameIntervalTick={onGameIntervalTick} startDatetime="2017-12-18 21:00" />
                 </Row>
                 <Row className="score-board">
                     <Col xs={4} className="score-board__team score-board__team--home">

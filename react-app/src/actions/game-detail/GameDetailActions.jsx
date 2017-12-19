@@ -4,10 +4,11 @@ import {
 } from "../../constants/Routes";
 import {
     GD_ADD_HOME_PLAYER,
-    GD_ADD_HOST_PLAYER,
+    GD_ADD_HOST_PLAYER, GD_ELAPSED_SECONDS_RECEIVE, GD_ELAPSED_SECONDS_RESET, GD_ELAPSED_SECONDS_TICK,
     GD_RECEIVE_EVENTS,
-    GD_RECEIVE_GAME_HEADER, GD_RECEIVE_HOME_PLAYERS,
-    GD_RECEIVE_HOST_PLAYERS, GD_REMOVE_HOME_PLAYER, GD_REMOVE_HOST_PLAYER, GD_RESET_EVENTS, GD_RESET_GAME_HEADER
+    GD_RECEIVE_GAME_HEADER, GD_RECEIVE_GAME_STATE, GD_RECEIVE_HOME_PLAYERS,
+    GD_RECEIVE_HOST_PLAYERS, GD_REMOVE_HOME_PLAYER, GD_REMOVE_HOST_PLAYER, GD_RESET_EVENTS, GD_RESET_GAME_HEADER,
+    GD_RESET_GAME_STATE
 } from "../../constants/GameDetailActionTypes";
 import {fetchDelete, fetchGet, fetchPost} from "../../utils/FetchMethods";
 import {store} from "../../containers/DispatchingApp";
@@ -96,11 +97,46 @@ const resetGameDetailHostPlayers = () => {
     }
 }
 
+const resetElapsedSeconds = () => {
+    return {
+        type: GD_ELAPSED_SECONDS_RESET
+    }
+}
+
+export const addElapsedSecond = () => {
+    return {
+        type: GD_ELAPSED_SECONDS_TICK
+    }
+}
+
+const receiveElapsedSeconds = (elapsedSeconds) => {
+    return {
+        type: GD_ELAPSED_SECONDS_RECEIVE,
+        seconds: elapsedSeconds
+    }
+}
+
+const receiveGameState = (state) => {
+    return {
+        type: GD_RECEIVE_GAME_STATE,
+        state: state
+    }
+}
+
+const resetGameState = () => {
+    return {
+        type: GD_RESET_GAME_STATE
+    }
+}
+
+
 export const resetGameDetail = () => dispatch => {
     dispatch(resetGameHeader());
     dispatch(resetGameDetailHomePlayers());
     dispatch(resetGameDetailHostPlayers());
     dispatch(resetGameEvents());
+    dispatch(resetElapsedSeconds());
+    dispatch(resetGameState());
 }
 
 export const loadGameDetailEvents = (gameId) => dispatch => {
@@ -125,7 +161,10 @@ export const loadGameDetail = (gameId) => dispatch => {
             if (data.data !== false) {
                 game = data.data;
             }
+
             dispatch(receiveGameHeader(game));
+            dispatch(receiveGameState(game.state));
+            dispatch(receiveElapsedSeconds(game.elapsed_seconds));
             dispatch(loadGameDetailHomePlayers(game.id, game.home.id));
             dispatch(loadGameDetailHostPlayers(game.id, game.host.id));
 
