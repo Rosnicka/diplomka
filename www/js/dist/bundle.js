@@ -6495,7 +6495,7 @@ module.exports.f = function (C) {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 var GAME_STATE_FILLING_ROSTER = exports.GAME_STATE_FILLING_ROSTER = 'filling_roster';
 var GAME_STATE_PREPARED = exports.GAME_STATE_PREPARED = 'prepared';
@@ -6503,6 +6503,25 @@ var GAME_STATE_PLAYING = exports.GAME_STATE_PLAYING = 'playing';
 var GAME_STATE_PAUSED = exports.GAME_STATE_PAUSED = 'paused';
 var GAME_STATE_FINISHED = exports.GAME_STATE_FINISHED = 'finished';
 var GAME_STATE_CLOSED = exports.GAME_STATE_CLOSED = 'closed';
+
+var getGameStateLabel = exports.getGameStateLabel = function getGameStateLabel(state) {
+    switch (state) {
+        case GAME_STATE_FILLING_ROSTER:
+            return 'Čeká na vyplnění soupisky';
+        case GAME_STATE_PREPARED:
+            return 'Čeká na zahájení';
+        case GAME_STATE_PLAYING:
+            return 'Právě se hraje';
+        case GAME_STATE_PAUSED:
+            return 'Pozastaven';
+        case GAME_STATE_FINISHED:
+            return 'Dohráno';
+        case GAME_STATE_CLOSED:
+            return 'Uzavřen';
+        default:
+            return '';
+    }
+};
 
 /***/ }),
 /* 117 */
@@ -49491,6 +49510,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterBootstrap = __webpack_require__(41);
 
+var _GameStateTypes = __webpack_require__(116);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GameListElement = function GameListElement(props) {
@@ -49551,7 +49572,7 @@ var GameListElement = function GameListElement(props) {
         _react2.default.createElement(
             'td',
             null,
-            game.state
+            (0, _GameStateTypes.getGameStateLabel)(game.state)
         ),
         _react2.default.createElement(
             'td',

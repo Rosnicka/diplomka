@@ -1,5 +1,6 @@
 import React from 'react';
 import {LinkContainer} from 'react-router-bootstrap';
+import {getGameStateLabel} from "../../constants/GameStateTypes";
 
 const GameListElement = (props) => {
     const {game} = props;
@@ -36,7 +37,7 @@ const GameListElement = (props) => {
             <td>{game.field}</td>
             <td>{game.home.name}</td>
             <td>{game.host.name}</td>
-            <td>{game.state}</td>
+            <td>{getGameStateLabel(game.state)}</td>
             <td className="text-center">{result()}</td>
             <th>
                 <LinkContainer to={'/zapasy/' + game.id}>

@@ -72,7 +72,6 @@ class Stopwatch extends Component {
         return '';
     }
 
-
     render() {
         return (
             <div>
