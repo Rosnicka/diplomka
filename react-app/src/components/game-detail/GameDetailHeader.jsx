@@ -1,9 +1,20 @@
 import React from 'react';
 import {Row, Col} from 'react-bootstrap'
 import Stopwatch from "../stopwatch/Stopwatch";
+import {GAME_EVENT_TYPE_GOAL} from "../../constants/GameEventTypes";
 
 const GameDetailHeader = (props) => {
-    const {homeTeamName, hostTeamName} = props;
+    const {gameHeader, gameEvents} = props;
+
+    const getTeamScore = (teamId) => {
+        let score = 0;
+        gameEvents.map((gameEvent) => {
+           if (gameEvent.type === GAME_EVENT_TYPE_GOAL && gameEvent.team.id === teamId) {
+               score = score + 1;
+           }
+        });
+        return score;
+    }
 
     return (
         <Row>
@@ -11,14 +22,14 @@ const GameDetailHeader = (props) => {
                 <Stopwatch {...props} />
                 <Row className="score-board">
                     <Col xs={4} className="score-board__team score-board__team--home">
-                        <div className="score-board__team-name">{homeTeamName}</div>
+                        <div className="score-board__team-name">{gameHeader.home.name}</div>
                         <div className="score-board__local">Domácí</div>
                     </Col>
                     <Col xs={4} className="score-board__results">
-                        2:1
+                        {getTeamScore(gameHeader.home.id)}:{getTeamScore(gameHeader.host.id)}
                     </Col>
                     <Col xs={4} className="score-board__team score-board__team--visitors">
-                        <div className="score-board__team-name">{hostTeamName}</div>
+                        <div className="score-board__team-name">{gameHeader.host.name}</div>
                         <div className="score-board__local">Hosté</div>
                     </Col>
                 </Row>

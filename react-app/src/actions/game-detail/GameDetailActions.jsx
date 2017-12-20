@@ -2,6 +2,7 @@ import {
     getGameByIdUrl, getGameEventsByGameId, getGamePlayersByGameIdUrl, getGameTeamPlayers, getRemovePlayerFromGameUrl
 } from "../../constants/Routes";
 import {
+    GD_ADD_GAME_EVENT,
     GD_ADD_HOME_PLAYER,
     GD_ADD_HOST_PLAYER, GD_ELAPSED_SECONDS_RECEIVE, GD_ELAPSED_SECONDS_RESET, GD_ELAPSED_SECONDS_TICK,
     GD_LAST_START_TIME_RECEIVE, GD_LAST_START_TIME_RESET,
@@ -85,6 +86,13 @@ const receiveGameEvents = (events) => {
     }
 }
 
+const addGameEvent = (event) => {
+    return {
+        type: GD_ADD_GAME_EVENT,
+        event: event
+    }
+}
+
 const resetGameEvents = () => {
     return {
         type: GD_RESET_EVENTS,
@@ -163,6 +171,27 @@ export const loadGameDetailEvents = (gameId) => dispatch => {
             }
             dispatch(receiveGameEvents(events));
 
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const createEvent = (gameId, playerId, eventType) => dispatch => {
+    const state = store.getState();
+    const minutes = Math.round(state.gameDetail.gameElapsedSeconds / 60);
+    const values = {
+        player: playerId,
+        type: eventType,
+        minute: minutes
+    }
+
+    fetchPost(getGameEventsByGameId(gameId), values).then((response) => {
+        response.json().then((data) => {
+            if (data.data !== false) {
+                const gameEvent = data.data;
+                dispatch(addGameEvent(gameEvent))
+            }
         });
     }).catch(function (error) {
         console.log(error);

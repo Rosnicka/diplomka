@@ -11600,6 +11600,7 @@ var GD_RESET_HOST_PLAYERS = exports.GD_RESET_HOST_PLAYERS = 'GD_RESET_HOST_PLAYE
 
 var GD_RECEIVE_EVENTS = exports.GD_RECEIVE_EVENTS = 'GD_RECEIVE_EVENTS';
 var GD_RESET_EVENTS = exports.GD_RESET_EVENTS = 'GD_RESET_EVENTS';
+var GD_ADD_GAME_EVENT = exports.GD_ADD_GAME_EVENT = 'GD_ADD_GAME_EVENT';
 
 var GD_ELAPSED_SECONDS_RECEIVE = exports.GD_ELAPSED_SECONDS_RECEIVE = 'GD_ELAPSED_SECONDS_RECEIVE';
 var GD_ELAPSED_SECONDS_RESET = exports.GD_ELAPSED_SECONDS_RESET = 'GD_ELAPSED_SECONDS_RESET';
@@ -12916,7 +12917,7 @@ var GAME_EVENT_TYPE_RED_CARD = exports.GAME_EVENT_TYPE_RED_CARD = 'red_card';
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.setLastStartGameTime = exports.changeGameState = exports.removePlayerFromGame = exports.addPlayerToGame = exports.loadGameDetail = exports.loadGameDetailEvents = exports.resetGameDetail = exports.addElapsedSecond = undefined;
+exports.setLastStartGameTime = exports.changeGameState = exports.removePlayerFromGame = exports.addPlayerToGame = exports.loadGameDetail = exports.createEvent = exports.loadGameDetailEvents = exports.resetGameDetail = exports.addElapsedSecond = undefined;
 
 var _Routes = __webpack_require__(52);
 
@@ -13004,6 +13005,13 @@ var receiveGameEvents = function receiveGameEvents(events) {
     };
 };
 
+var addGameEvent = function addGameEvent(event) {
+    return {
+        type: _GameDetailActionTypes.GD_ADD_GAME_EVENT,
+        event: event
+    };
+};
+
 var resetGameEvents = function resetGameEvents() {
     return {
         type: _GameDetailActionTypes.GD_RESET_EVENTS,
@@ -13084,6 +13092,29 @@ var loadGameDetailEvents = exports.loadGameDetailEvents = function loadGameDetai
                     events = data.data;
                 }
                 dispatch(receiveGameEvents(events));
+            });
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+};
+
+var createEvent = exports.createEvent = function createEvent(gameId, playerId, eventType) {
+    return function (dispatch) {
+        var state = _DispatchingApp.store.getState();
+        var minutes = Math.round(state.gameDetail.gameElapsedSeconds / 60);
+        var values = {
+            player: playerId,
+            type: eventType,
+            minute: minutes
+        };
+
+        (0, _FetchMethods.fetchPost)((0, _Routes.getGameEventsByGameId)(gameId), values).then(function (response) {
+            response.json().then(function (data) {
+                if (data.data !== false) {
+                    var gameEvent = data.data;
+                    dispatch(addGameEvent(gameEvent));
+                }
             });
         }).catch(function (error) {
             console.log(error);
@@ -43681,6 +43712,8 @@ var gameEvents = function gameEvents() {
             return action.events;
         case _GameDetailActionTypes.GD_RESET_EVENTS:
             return [];
+        case _GameDetailActionTypes.GD_ADD_GAME_EVENT:
+            return [].concat(_toConsumableArray(state), [action.event]);
         default:
             return state;
     }
@@ -49733,9 +49766,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
         onClickRemovePlayerFromRoaster: function onClickRemovePlayerFromRoaster(playerId) {
             dispatch((0, _GameDetailActions.removePlayerFromGame)(playerId));
         },
-        onClickAddNewEvent: function onClickAddNewEvent(player, eventType) {
-            console.log(player);
-            console.log(eventType);
+        onClickAddNewEvent: function onClickAddNewEvent(gameId, playerId, eventType) {
+            dispatch((0, _GameDetailActions.createEvent)(gameId, playerId, eventType));
         },
         onClickStartGame: function onClickStartGame(gameId) {
             dispatch((0, _GameDetailActions.setLastStartGameTime)(gameId));
@@ -49761,19 +49793,11 @@ var GameDetailRepository = function GameDetailRepository(props) {
     var gameHeader = props.gameHeader,
         homePlayers = props.homePlayers,
         hostPlayers = props.hostPlayers,
-        gameEvents = props.gameEvents,
         myTeam = props.myTeam,
         gameLastStartTime = props.gameLastStartTime,
         gameState = props.gameState,
         gameElapsedSeconds = props.gameElapsedSeconds;
 
-
-    var homeTeamName = function homeTeamName() {
-        return gameHeader !== false ? gameHeader.home.name : '';
-    };
-    var hostTeamName = function hostTeamName() {
-        return gameHeader !== false ? gameHeader.host.name : '';
-    };
 
     var isLoaded = function isLoaded() {
         return !(gameHeader === false || homePlayers === false || hostPlayers === false || gameElapsedSeconds === false || gameState === false || gameLastStartTime === false || myTeam.id === undefined);
@@ -49806,7 +49830,7 @@ var GameDetailRepository = function GameDetailRepository(props) {
         _react2.default.createElement(
             _reactBootstrap.Col,
             { xs: 12, className: 'game-detail' },
-            _react2.default.createElement(_GameDetailHeader2.default, _extends({ homeTeamName: homeTeamName(), hostTeamName: hostTeamName() }, props)),
+            _react2.default.createElement(_GameDetailHeader2.default, props),
             _react2.default.createElement(
                 _reactBootstrap.Row,
                 null,
@@ -49825,7 +49849,7 @@ var GameDetailRepository = function GameDetailRepository(props) {
                         playersOnRoster: hostPlayers }, props))
                 )
             ),
-            _react2.default.createElement(_GameDetailEventList2.default, { events: gameEvents })
+            _react2.default.createElement(_GameDetailEventList2.default, props)
         )
     );
 };
@@ -49853,19 +49877,33 @@ var _GameDetailEventElement = __webpack_require__(448);
 
 var _GameDetailEventElement2 = _interopRequireDefault(_GameDetailEventElement);
 
+var _GameEventTypes = __webpack_require__(208);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GameDetailEventList = function GameDetailEventList(props) {
-    var events = props.events;
+    var gameEvents = props.gameEvents,
+        gameHeader = props.gameHeader;
 
 
-    var listAllEvents = function listAllEvents(events) {
-        return events.map(function (event, index) {
-            return _react2.default.createElement(_GameDetailEventElement2.default, { key: index, gameEvent: event, gameActualResult: '2:2' });
+    var listAllEvents = function listAllEvents() {
+        var homeScore = 0;
+        var hostScore = 0;
+
+        return gameEvents.map(function (event, index) {
+            if (event.type === _GameEventTypes.GAME_EVENT_TYPE_GOAL) {
+                if (gameHeader.home.id === event.team.id) {
+                    homeScore = homeScore + 1;
+                } else if (gameHeader.host.id === event.team.id) {
+                    hostScore = hostScore + 1;
+                }
+            }
+
+            return _react2.default.createElement(_GameDetailEventElement2.default, { key: index, gameEvent: event, gameActualResult: homeScore + ':' + hostScore });
         });
     };
 
-    if (events.length === 0) {
+    if (gameEvents.length === 0) {
         return '';
     }
 
@@ -49914,7 +49952,7 @@ var GameDetailEventList = function GameDetailEventList(props) {
                 _react2.default.createElement(
                     'tbody',
                     null,
-                    listAllEvents(events)
+                    listAllEvents()
                 )
             )
         )
@@ -49948,7 +49986,7 @@ var GameDetailEventElement = function GameDetailEventElement(props) {
 
 
     var eventType = gameEventTypes.find(function (gameEventType) {
-        return gameEventType.code == gameEvent.type;
+        return gameEventType.code === gameEvent.type;
     });
 
     return _react2.default.createElement(
@@ -49972,9 +50010,11 @@ var GameDetailEventElement = function GameDetailEventElement(props) {
         _react2.default.createElement(
             'td',
             null,
-            gameEvent.player,
+            gameEvent.player.first_name,
+            ' ',
+            gameEvent.player.last_name,
             ' (',
-            gameEvent.team,
+            gameEvent.team.name,
             ')'
         ),
         _react2.default.createElement(
@@ -50108,12 +50148,24 @@ var _Stopwatch = __webpack_require__(561);
 
 var _Stopwatch2 = _interopRequireDefault(_Stopwatch);
 
+var _GameEventTypes = __webpack_require__(208);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GameDetailHeader = function GameDetailHeader(props) {
-    var homeTeamName = props.homeTeamName,
-        hostTeamName = props.hostTeamName;
+    var gameHeader = props.gameHeader,
+        gameEvents = props.gameEvents;
 
+
+    var getTeamScore = function getTeamScore(teamId) {
+        var score = 0;
+        gameEvents.map(function (gameEvent) {
+            if (gameEvent.type === _GameEventTypes.GAME_EVENT_TYPE_GOAL && gameEvent.team.id === teamId) {
+                score = score + 1;
+            }
+        });
+        return score;
+    };
 
     return _react2.default.createElement(
         _reactBootstrap.Row,
@@ -50131,7 +50183,7 @@ var GameDetailHeader = function GameDetailHeader(props) {
                     _react2.default.createElement(
                         'div',
                         { className: 'score-board__team-name' },
-                        homeTeamName
+                        gameHeader.home.name
                     ),
                     _react2.default.createElement(
                         'div',
@@ -50142,7 +50194,9 @@ var GameDetailHeader = function GameDetailHeader(props) {
                 _react2.default.createElement(
                     _reactBootstrap.Col,
                     { xs: 4, className: 'score-board__results' },
-                    '2:1'
+                    getTeamScore(gameHeader.home.id),
+                    ':',
+                    getTeamScore(gameHeader.host.id)
                 ),
                 _react2.default.createElement(
                     _reactBootstrap.Col,
@@ -50150,7 +50204,7 @@ var GameDetailHeader = function GameDetailHeader(props) {
                     _react2.default.createElement(
                         'div',
                         { className: 'score-board__team-name' },
-                        hostTeamName
+                        gameHeader.host.name
                     ),
                     _react2.default.createElement(
                         'div',
@@ -50325,7 +50379,8 @@ var GameDetailRosterPlayerElement = function GameDetailRosterPlayerElement(props
         onClickAddNewEvent = props.onClickAddNewEvent,
         isReferee = props.isReferee,
         isCaptain = props.isCaptain,
-        gameState = props.gameState;
+        gameState = props.gameState,
+        gameHeader = props.gameHeader;
 
     var getGameEventButtons = function getGameEventButtons() {
         if (isReferee && gameState === _GameStateTypes.GAME_STATE_PLAYING) {
@@ -50336,7 +50391,7 @@ var GameDetailRosterPlayerElement = function GameDetailRosterPlayerElement(props
                     _reactBootstrap.Button,
                     { bsStyle: 'success', bsSize: 'small',
                         onClick: function onClick() {
-                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_GOAL);
+                            return onClickAddNewEvent(gameHeader.id, player.id, _GameEventTypes.GAME_EVENT_TYPE_GOAL);
                         } },
                     'G\xF3l'
                 ),
@@ -50344,7 +50399,7 @@ var GameDetailRosterPlayerElement = function GameDetailRosterPlayerElement(props
                     _reactBootstrap.Button,
                     { bsStyle: 'info', bsSize: 'small',
                         onClick: function onClick() {
-                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_ASSIST);
+                            return onClickAddNewEvent(gameHeader.id, player.id, _GameEventTypes.GAME_EVENT_TYPE_ASSIST);
                         } },
                     'Asistence'
                 ),
@@ -50352,7 +50407,7 @@ var GameDetailRosterPlayerElement = function GameDetailRosterPlayerElement(props
                     _reactBootstrap.Button,
                     { bsStyle: 'warning', bsSize: 'small',
                         onClick: function onClick() {
-                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_YELLOW_CARD);
+                            return onClickAddNewEvent(gameHeader.id, player.id, _GameEventTypes.GAME_EVENT_TYPE_YELLOW_CARD);
                         } },
                     '\u017Dl. karta'
                 ),
@@ -50360,7 +50415,7 @@ var GameDetailRosterPlayerElement = function GameDetailRosterPlayerElement(props
                     _reactBootstrap.Button,
                     { bsStyle: 'danger', bsSize: 'small',
                         onClick: function onClick() {
-                            return onClickAddNewEvent(player, _GameEventTypes.GAME_EVENT_TYPE_RED_CARD);
+                            return onClickAddNewEvent(gameHeader.id, player.id, _GameEventTypes.GAME_EVENT_TYPE_RED_CARD);
                         } },
                     '\u010C. karta'
                 )

@@ -7,19 +7,19 @@ import {
 import {GAME_STATE_FILLING_ROSTER, GAME_STATE_PLAYING} from "../../../constants/GameStateTypes";
 
 const GameDetailRosterPlayerElement = (props) => {
-    const {player, onClickRemovePlayerFromRoaster, onClickAddNewEvent, isReferee, isCaptain, gameState} = props;
+    const {player, onClickRemovePlayerFromRoaster, onClickAddNewEvent, isReferee, isCaptain, gameState, gameHeader} = props;
     const getGameEventButtons = () => {
         if (isReferee && gameState === GAME_STATE_PLAYING) {
             return (
                 <div>
                     <Button bsStyle="success" bsSize="small"
-                            onClick={() => onClickAddNewEvent(player, GAME_EVENT_TYPE_GOAL)}>Gól</Button>
+                            onClick={() => onClickAddNewEvent(gameHeader.id, player.id, GAME_EVENT_TYPE_GOAL)}>Gól</Button>
                     <Button bsStyle="info" bsSize="small"
-                            onClick={() => onClickAddNewEvent(player, GAME_EVENT_TYPE_ASSIST)}>Asistence</Button>
+                            onClick={() => onClickAddNewEvent(gameHeader.id, player.id, GAME_EVENT_TYPE_ASSIST)}>Asistence</Button>
                     <Button bsStyle="warning" bsSize="small"
-                            onClick={() => onClickAddNewEvent(player, GAME_EVENT_TYPE_YELLOW_CARD)}>Žl. karta</Button>
+                            onClick={() => onClickAddNewEvent(gameHeader.id, player.id, GAME_EVENT_TYPE_YELLOW_CARD)}>Žl. karta</Button>
                     <Button bsStyle="danger" bsSize="small"
-                            onClick={() => onClickAddNewEvent(player, GAME_EVENT_TYPE_RED_CARD)}>Č. karta</Button>
+                            onClick={() => onClickAddNewEvent(gameHeader.id, player.id, GAME_EVENT_TYPE_RED_CARD)}>Č. karta</Button>
                 </div>
             )
         } else {

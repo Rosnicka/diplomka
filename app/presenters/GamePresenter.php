@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Model\Game\Game;
+use App\Model\Game\GameEvent;
 use App\Model\Player\Player;
 use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\Team\Team;
@@ -86,6 +87,32 @@ class GamePresenter extends ResourcePresenter
         $this->resource->data = $players;
     }
 
+    public function actionCreateEvents()
+    {
+        $gameId = $this->getParameter('id');
+        $game = $this->doctrine->getRepository(Game::getClassName())->find($gameId);
+        $data = $this->getInput()->getData();
+        $player = $this->doctrine->getRepository(Player::getClassName())->find($data['player']);
+
+        $gameEvent = new GameEvent();
+        $gameEvent->setGame($game);
+        $gameEvent->setPlayer($player);
+        $gameEvent->setType($data['type']);
+        $gameEvent->setMinute($data['minute']);
+        $gameEvent->setCreated(new \DateTime());
+
+        $this->doctrine->persist($gameEvent);
+        $this->doctrine->flush();
+
+        $gameEventInfo = $gameEvent->getData();
+        $player = $gameEvent->player;
+        $team = $player->team;
+        $gameEventInfo['player'] = $player->getData();
+        $gameEventInfo['team'] = $team->getData();
+
+        $this->resource->data = $gameEventInfo;
+    }
+
     public function actionReadEvents()
     {
         $gameId = $this->getParameter('id');
@@ -96,8 +123,8 @@ class GamePresenter extends ResourcePresenter
             $gameEvent = $row->getData();
             $player = $row->player;
             $team = $player->team;
-            $gameEvent['player'] = $player->firstName . ' ' . $player->lastName;
-            $gameEvent['team'] = $team->name;
+            $gameEvent['player'] = $player->getData();
+            $gameEvent['team'] = $team->getData();
 
             $data[] = $gameEvent;
         }

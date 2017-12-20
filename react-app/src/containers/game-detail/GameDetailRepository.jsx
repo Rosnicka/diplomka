@@ -5,7 +5,7 @@ import {Col, Row} from 'react-bootstrap'
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import GameDetailEventList from "../../components/game-detail/GameDetailEventList";
 import {
-    addElapsedSecond, addPlayerToGame, changeGameState, removePlayerFromGame,
+    addElapsedSecond, addPlayerToGame, changeGameState, createEvent, removePlayerFromGame,
     setLastStartGameTime
 } from "../../actions/game-detail/GameDetailActions";
 import GameDetailControls from "../../components/game-detail/GameDetailControls";
@@ -35,9 +35,8 @@ const mapDispatchToProps = (dispatch) => {
         onClickRemovePlayerFromRoaster: (playerId) => {
             dispatch(removePlayerFromGame(playerId))
         },
-        onClickAddNewEvent: (player, eventType) => {
-            console.log(player);
-            console.log(eventType)
+        onClickAddNewEvent: (gameId, playerId, eventType) => {
+            dispatch(createEvent(gameId, playerId, eventType))
         },
         onClickStartGame: (gameId) => {
             dispatch(setLastStartGameTime(gameId));
@@ -60,10 +59,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const GameDetailRepository = (props) => {
-    const {gameHeader, homePlayers, hostPlayers, gameEvents, myTeam, gameLastStartTime, gameState, gameElapsedSeconds} = props;
-
-    const homeTeamName = () => (gameHeader !== false ? gameHeader.home.name : '')
-    const hostTeamName = () => (gameHeader !== false ? gameHeader.host.name : '')
+    const {gameHeader, homePlayers, hostPlayers, myTeam, gameLastStartTime, gameState, gameElapsedSeconds} = props;
 
     const isLoaded = () => {
         return !(
@@ -101,7 +97,7 @@ const GameDetailRepository = (props) => {
         <div>
             <GameDetailControls {...props} />
             <Col xs={12} className="game-detail">
-                <GameDetailHeader homeTeamName={homeTeamName()} hostTeamName={hostTeamName()} {...props}/>
+                <GameDetailHeader {...props}/>
                 <Row>
                     <Col xs={6} className="game-detail__team-roster">
                         <GameDetailPlayerRoster isCaptain={isHomeTeamCaptain()}
@@ -114,7 +110,7 @@ const GameDetailRepository = (props) => {
                                                 playersOnRoster={hostPlayers} {...props} />
                     </Col>
                 </Row>
-                <GameDetailEventList events={gameEvents}/>
+                <GameDetailEventList {...props} />
             </Col>
         </div>
     );

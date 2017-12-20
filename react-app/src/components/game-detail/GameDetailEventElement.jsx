@@ -8,7 +8,7 @@ const GameDetailEventElement = (props) => {
     const {gameEvent, gameActualResult} = props;
 
     const eventType = gameEventTypes.find((gameEventType) => {
-        return gameEventType.code == gameEvent.type
+        return gameEventType.code === gameEvent.type
     });
 
     return (
@@ -17,7 +17,7 @@ const GameDetailEventElement = (props) => {
             <td>
                 <span className={eventType.className}>{eventType.text}</span>
             </td>
-            <td>{gameEvent.player} ({gameEvent.team})</td>
+            <td>{gameEvent.player.first_name} {gameEvent.player.last_name} ({gameEvent.team.name})</td>
             <td>{gameActualResult}</td>
         </tr>
     );
