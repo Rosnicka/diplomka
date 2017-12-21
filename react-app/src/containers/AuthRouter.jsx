@@ -8,6 +8,7 @@ import MyTeamHomePage from "../pages/my-team/MyTeamHomePage";
 
 import GameRepository from "./games/GameRepository";
 import GameDetailPage from "../pages/game-detail/GameDetailPage";
+import GroupTablePage from "../pages/group-table/GroupTablePage";
 
 class AuthRouter extends Component {
     render() {
@@ -24,6 +25,9 @@ class AuthRouter extends Component {
                         <LinkContainer to="/zapasy">
                             <NavItem eventKey={3}>Zápasy</NavItem>
                         </LinkContainer>
+                        <LinkContainer to="/tabulka">
+                            <NavItem eventKey={4}>Tabulka</NavItem>
+                        </LinkContainer>
                     </Nav>
 
                     <Switch>
@@ -33,6 +37,7 @@ class AuthRouter extends Component {
                         <Route path="/hraci/:id" component={PlayerRepository} />
                         <Route exact path="/zapasy" component={GameRepository}/>
                         <Route path="/zapasy/:id" component={GameDetailPage}/>
+                        <Route path="/tabulka" component={GroupTablePage}/>
                     </Switch>
                 </div>
             </BrowserRouter>

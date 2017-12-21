@@ -8,7 +8,6 @@ use App\Model\TeamInGame\TeamInGame;
 use App\Model\User\User;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
-use Drahak\Restful\Security\Process\SecuredAuthentication;
 
 /**
  * Class TeamPresenter

@@ -29,4 +29,10 @@ class TeamInGame extends BaseEntity
      * @var string
      */
     protected $relationship;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @var bool
+     */
+    protected $rosterFilled;
 }

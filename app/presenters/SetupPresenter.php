@@ -2,8 +2,13 @@
 
 namespace App\Presenters;
 
+use App\Model\Competition\Competition;
 use App\Model\Field\Field;
 use App\Model\FieldLocation\FieldLocation;
+use App\Model\Group\Group;
+use App\Model\League\League;
+use App\Model\Team\Team;
+use App\Model\TeamInGroup\TeamInGroup;
 use Doctrine\ORM\EntityManager;
 use Nette;
 
@@ -16,8 +21,125 @@ class SetupPresenter extends Nette\Application\UI\Presenter
 
     public function actionDefault()
     {
-        $this->setupFieldsAndFieldsLocations();
+        //$this->setupFieldsAndFieldsLocations();
+        //$this->setupCompetition();
+        //$this->setupTeams();
+        $this->setupGames();
         exit('Setup fields and field locations done.');
+    }
+
+    protected function setupGames(){
+        //$groups = $this->doctrine->getRepository(Group::getClassName())->findAll();
+        $group = $this->doctrine->getRepository(Group::getClassName())->find(47);
+//        foreach ($groups as $group) {
+            $teams = [];
+            foreach ($group->teamMemberships as $teamMembership) {
+                $teams[] = $teamMembership->team->id;
+            }
+            $result = \Scheduler::schedule($teams);
+        //}
+
+        die();
+    }
+
+    protected function setupTeams()
+    {
+        $teams = [
+            'England United FC',
+            'PFC Kodymka B',
+            'Medvědi B',
+            'Senioři Praha A',
+            'Ústavan 01 KK',
+            'Yakuza',
+            'Vysmátí zajíci B',
+            'Digi Prague FC',
+            'Bröndby codein IF',
+            'Jacobs',
+            'Junior Motol',
+            'Planners Prague FC B',
+            'Primitives Prague FC',
+            'Inter Letná',
+            'SportHES',
+            'Prague City FC',
+            'Nounejm',
+            'Divočáci',
+            'Dynamit Vršovice',
+            'Jedna noha netleská',
+            'Rudý teror',
+            'Suchá dáseň AC',
+            'Ya Basta! A',
+            'Hustý FC',
+            'Proradost FK',
+            'Senioři Praha B',
+            'Gangbeng',
+            'Blesk VK B',
+            'Horno Porno',
+            'Airconquest F.F.C.',
+            'Tvar VD',
+            'Lemplíci FC',
+            'Canary FC',
+        ];
+        $league = $this->doctrine->getRepository(League::getClassName())->findOneBy([
+            'level' => 8
+        ]);
+
+        $x = 0;
+        foreach ($league->groups as $group) {
+            for($i=0; $i<5; $i++) {
+                if (!isset($teams[$x*5 + $i])) {
+                    break;
+                }
+                $team = new Team();
+                $team->setName($teams[$x*5 + $i]);
+                $this->doctrine->persist($team);
+
+                $teamGroupMembership = new TeamInGroup();
+                $teamGroupMembership->setTeam($team);
+                $teamGroupMembership->setGroup($group);
+                $this->doctrine->persist($teamGroupMembership);
+            }
+            $x++;
+        }
+        $this->doctrine->flush();
+    }
+
+    protected function setupCompetition()
+    {
+        $competition = new Competition();
+        $competition->setName('JARO 2018');
+        $competition->setStartDate(new \DateTime());
+        $competition->setEndDate(new \DateTime('2018-05-30'));
+
+        $this->doctrine->persist($competition);
+
+        foreach ($this->getLeaguesWithGroups() as $leagueLevel => $groups) {
+            $league = new League();
+            $league->setLevel($leagueLevel);
+            $league->setCompetition($competition);
+            $this->doctrine->persist($league);
+
+            foreach ($groups as $groupLetter) {
+                $group = new Group();
+                $group->setLetter($groupLetter);
+                $group->setLeague($league);
+                $this->doctrine->persist($group);
+            }
+        }
+        $this->doctrine->flush();
+    }
+
+    protected function getLeaguesWithGroups()
+    {
+        return [
+            1 => ['A'],
+            2 => ['A', 'B'],
+            3 => ['A', 'B', 'C', 'D'],
+            4 => ['A', 'B', 'C', 'D', 'E', 'F'],
+            5 => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+            6 => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'],
+            7 => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'],
+            8 => ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+        ];
     }
 
     protected function setupFieldsAndFieldsLocations()
@@ -187,49 +309,3 @@ class SetupPresenter extends Nette\Application\UI\Presenter
             ];
     }
 }
-//    [
-//        'code' => 'DOLME',
-//        'name' => 'Dolní Měcholupy',
-//    ],
-//    [
-//        'code' => 'EDEN',
-//        'name' => 'Hala Slavia',
-//    ],
-//    [
-//        'code' => 'GENJA',
-//        'name' => 'ZŠ Generála Janouška',
-//    ],
-//    [
-//        'code' => 'HÁJE 1,2',
-//        'name' => 'Háje',
-//    ],
-//
-//    [
-//        'code' => 'KBELY ',
-//        'name' => 'Spartak Kbely',
-//    ],
-//    [
-//        'code' => 'KLAU 1, 2',
-//        'name' => 'Klausova',
-//    ],
-//    [
-//        'code' => 'KORAB',
-//        'name' => 'Koráb',
-//    ],
-
-//    [
-//        'code' => 'SANC 1,2,3,4',
-//        'name' => 'Na Šancích',
-//    ],
-
-//    [
-//        'code' => 'STRE',
-//        'name' => 'Střešovice Tatran',
-//    ],
-//
-//
-//    [
-//        'code' => 'ZARUB',
-//        'name' => 'Zárubova',
-//    ],
-//],

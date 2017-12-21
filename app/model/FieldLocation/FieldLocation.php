@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class FieldLocation extends BaseEntity
 {
     /**
-     * @ORM\OneToMany(targetEntity="App\Model\Field\Field", mappedBy="field")
+     * @ORM\OneToMany(targetEntity="App\Model\Field\Field", mappedBy="fieldLocation")
      * @var ArrayCollection|Field[]
      */
     protected $fields;

@@ -4,6 +4,7 @@ namespace App\Model\Game;
 
 use App\Model\BaseEntity;
 use App\Model\Field\Field;
+use App\Model\Group\Group;
 use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\TeamInGame\TeamInGame;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -57,6 +58,12 @@ class Game extends BaseEntity
      * @var Field
      */
     protected $field;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Model\Group\Group", inversedBy="gameMemberships")
+     * @var Group
+     */
+    protected $group;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Model\TeamInGame\TeamInGame", mappedBy="game")
