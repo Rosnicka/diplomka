@@ -14,6 +14,7 @@ class ReactAppRoutes
     const TEAMS = '/tymy';
     const GAMES = '/zapasy';
     const GAME_DETAIL = '/zapasy/[<id>]';
+    const GROUP_TABLE = '/tabulka';
 
     public static function getRoutes()
     {
@@ -27,6 +28,7 @@ class ReactAppRoutes
             self::GAMES,
             self::GAME_DETAIL,
             self::MY_TEAM_HOME,
+            self::GROUP_TABLE,
         ];
     }
 }

@@ -24,20 +24,4 @@ class ApplicationPresenter extends ResourcePresenter
 
         $this->resource->data = $application;
     }
-
-    public function actionRead()
-    {
-        $this->resource->action = 'Read';
-    }
-
-    public function actionUpdate()
-    {
-        $this->resource->action = 'Update';
-    }
-
-    public function actionDelete()
-    {
-        $this->resource->action = 'Delete';
-    }
-
 }

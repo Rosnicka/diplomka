@@ -20,24 +20,6 @@ class TeamPresenter extends ResourcePresenter
      * @inject
      */
     public $doctrine;
-//
-//    /** @var SecuredAuthentication */
-//    private $securedAuthentication;
-//
-//    /**
-//     * Inject secured authentication process
-//     * @param SecuredAuthentication $auth
-//     */
-//    public function injectSecuredAuthentication(SecuredAuthentication $auth)
-//    {
-//        $this->securedAuthentication = $auth;
-//    }
-//
-//    protected function startup()
-//    {
-//        parent::startup();
-//        $this->authentication->setAuthProcess($this->securedAuthentication);
-//    }
 
     public function actionCreate()
     {
@@ -71,16 +53,6 @@ class TeamPresenter extends ResourcePresenter
             $teams = $this->doctrine->getRepository(Team::getClassName())->findAll();
             $this->resource->data = $teams;
         }
-    }
-
-    public function actionUpdate()
-    {
-        $this->resource->action = 'Update';
-    }
-
-    public function actionDelete()
-    {
-        $this->resource->action = 'Delete';
     }
 
     public function actionReadPlayers()

@@ -51,6 +51,7 @@ class RouterFactory
         $router[] = new CrudRoute('api/v1/players/[<id>]', 'Player');
         $router[] = new CrudRoute('api/v1/teams[/<id>]/[<relation>[/<relationId>]]', 'Team');
         $router[] = new CrudRoute('api/v1/games[/<id>]/[<relation>[/<relationId>]]', 'Game');
+        $router[] = new CrudRoute('api/v1/groups[/<id>]/[<relation>[/<relationId>]]', 'Group');
         $router[] = new CrudRoute('api/v1/fields', 'Field');
         $router[] = new CrudRoute('api/v1/field-locations', 'FieldLocation');
         $router[] = new CrudRoute('api/v1/applications', 'Application');

@@ -17,25 +17,9 @@ class FieldLocationPresenter extends ResourcePresenter
      */
     public $doctrine;
 
-    public function actionCreate()
-    {
-        $this->resource->action = 'Create';
-    }
-
     public function actionRead()
     {
         $fieldLocations = $this->doctrine->getRepository(FieldLocation::getClassName())->findAll();
         $this->resource->data = $fieldLocations;
     }
-
-    public function actionUpdate()
-    {
-        $this->resource->action = 'Update';
-    }
-
-    public function actionDelete()
-    {
-        $this->resource->action = 'Delete';
-    }
-
 }
