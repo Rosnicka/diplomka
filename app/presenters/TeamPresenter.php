@@ -3,8 +3,10 @@
 namespace App\Presenters;
 
 use App\Model\Game\Game;
+use App\Model\Group\Group;
 use App\Model\Team\Team;
 use App\Model\TeamInGame\TeamInGame;
+use App\Model\TeamInGroup\TeamInGroup;
 use App\Model\User\User;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
@@ -46,11 +48,26 @@ class TeamPresenter extends ResourcePresenter
         $id = $this->getParameter('id');
 
         if ($id !== null) {
+            /** @var Team $team */
             $team = $this->doctrine->getRepository(Team::getClassName())->find($id);
-            $this->resource->data = $team;
+            $teamInGroup = $this->doctrine->getRepository(TeamInGroup::getClassName())->findOneBy(['team' => $team]);
+            /** @var Group $group */
+            $group = $teamInGroup->group;
+            $teamData = $team->getData();
+            $teamData['group'] = $group->toArray();
+            $teamData['league'] = $group->league->toArray();
+            $teamData['competition'] = $group->league->competition->toArray();
+            $this->resource->data = $teamData;
         } else {
             $teams = $this->doctrine->getRepository(Team::getClassName())->findAll();
-            $this->resource->data = $teams;
+            $teamsData = [];
+            /** @var Team $team */
+            foreach ($teams as $team) {
+                $teamData = $team->getData();
+                $teamsData[] = $teamData;
+            }
+
+            $this->resource->data = $teamsData;
         }
     }
 

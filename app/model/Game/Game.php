@@ -36,13 +36,13 @@ class Game extends BaseEntity
     protected $datetime;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      * @var string
      */
     protected $lastStartDatetime;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var int
      */
     protected $elapsedSeconds;
@@ -89,8 +89,8 @@ class Game extends BaseEntity
         foreach ($this->teamMemberships as $teamMembership) {
             $data[$teamMembership->relationship] = $teamMembership->team->getData();
         }
-        $data['datetime'] = $this->datetime->format('Y.m.d H:m');
-        $data['last_start_datetime'] = $this->lastStartDatetime->format('Y.m.d H:m:s');
+        $data['datetime'] = $this->datetime !== null ? $this->datetime->format('Y.m.d H:m') : null;
+        $data['last_start_datetime'] = $this->lastStartDatetime !== null ? $this->lastStartDatetime->format('Y.m.d H:m:s') : null;
         $data['field'] = $this->field->name;
         $data['result']['home'] = 0;
         $data['result']['host'] = 2;

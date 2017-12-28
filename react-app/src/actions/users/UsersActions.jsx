@@ -2,6 +2,7 @@ import {IS_FETCHING_USER, RECEIVE_LOGGED_USER} from "../../constants/UserActionT
 import {fetchGet, fetchPost} from "../../utils/FetchMethods";
 import {LOGGED_USER_URL, LOGIN_USER_URL, REGISTER_USER_URL} from "../../constants/Routes";
 import {getMyGamesAsReferee, getMyGamesToPlay, getMyPlayers, getMyTeam, isFetchingTeam} from "../my-team/MyTeamActions";
+import {loadGroupResults} from "../group/GroupActions";
 
 const receiveLoggedUser = user => {
     return {

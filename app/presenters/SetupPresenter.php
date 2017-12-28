@@ -5,9 +5,11 @@ namespace App\Presenters;
 use App\Model\Competition\Competition;
 use App\Model\Field\Field;
 use App\Model\FieldLocation\FieldLocation;
+use App\Model\Game\Game;
 use App\Model\Group\Group;
 use App\Model\League\League;
 use App\Model\Team\Team;
+use App\Model\TeamInGame\TeamInGame;
 use App\Model\TeamInGroup\TeamInGroup;
 use Doctrine\ORM\EntityManager;
 use Nette;
@@ -28,18 +30,61 @@ class SetupPresenter extends Nette\Application\UI\Presenter
         exit('Setup fields and field locations done.');
     }
 
-    protected function setupGames(){
-        //$groups = $this->doctrine->getRepository(Group::getClassName())->findAll();
-        $group = $this->doctrine->getRepository(Group::getClassName())->find(47);
-//        foreach ($groups as $group) {
+    protected function setupGames()
+    {
+        $datetime = new \DateTime('18:30');
+        $fields = $this->doctrine->getRepository(Field::getClassName())->findAll();
+        $groups = $this->doctrine->getRepository(Group::getClassName())->findAll();
+
+        //universal referee
+        $universalTeam = $this->doctrine->getRepository(Team::getClassName())->findOneBy([]);
+
+        foreach ($groups as $group) {
             $teams = [];
+            $teamsInArray = [];
             foreach ($group->teamMemberships as $teamMembership) {
                 $teams[] = $teamMembership->team->id;
+                $teamsInArray[$teamMembership->team->id] = $teamMembership->team;
             }
-            $result = \Scheduler::schedule($teams);
-        //}
+            $rounds = \Scheduler::schedule($teams);
+            foreach ($rounds as $roundKey => $games) {
+                $datetime = $datetime->modify('+1 week');
 
-        die();
+                foreach ($games as $gameKey => $game) {
+                    if ($game['home'] === false || $game['host'] === false) {
+                        continue;
+                    }
+
+                    $newGame = new Game();
+                    $newGame->setField($fields[array_rand($fields)]);
+                    $newGame->setRound($roundKey);
+                    $newGame->setDatetime($datetime);
+                    $newGame->setState(Game::GAME_STATE_FILLING_ROSTER);
+                    $newGame->setGroup($group);
+                    $this->doctrine->persist($newGame);
+
+                    $newTeamInGameHome = new TeamInGame();
+                    $newTeamInGameHome->setGame($newGame);
+                    $newTeamInGameHome->setRelationship(TeamInGame::RELATIONSHIP_HOME);
+                    $newTeamInGameHome->setTeam($teamsInArray[$game['home']]);
+
+                    $newTeamInGameHost = new TeamInGame();
+                    $newTeamInGameHost->setGame($newGame);
+                    $newTeamInGameHost->setRelationship(TeamInGame::RELATIONSHIP_HOST);
+                    $newTeamInGameHost->setTeam($teamsInArray[$game['host']]);
+
+                    $newTeamInGameReferee = new TeamInGame();
+                    $newTeamInGameReferee->setGame($newGame);
+                    $newTeamInGameReferee->setRelationship(TeamInGame::RELATIONSHIP_REFEREE);
+                    $newTeamInGameReferee->setTeam($universalTeam);
+
+                    $this->doctrine->persist($newTeamInGameHome);
+                    $this->doctrine->persist($newTeamInGameHost);
+                    $this->doctrine->persist($newTeamInGameReferee);
+                }
+            }
+        }
+        $this->doctrine->flush();
     }
 
     protected function setupTeams()
@@ -80,17 +125,17 @@ class SetupPresenter extends Nette\Application\UI\Presenter
             'Canary FC',
         ];
         $league = $this->doctrine->getRepository(League::getClassName())->findOneBy([
-            'level' => 8
+            'level' => 8,
         ]);
 
         $x = 0;
         foreach ($league->groups as $group) {
-            for($i=0; $i<5; $i++) {
-                if (!isset($teams[$x*5 + $i])) {
+            for ($i = 0; $i < 5; $i++) {
+                if (!isset($teams[$x * 5 + $i])) {
                     break;
                 }
                 $team = new Team();
-                $team->setName($teams[$x*5 + $i]);
+                $team->setName($teams[$x * 5 + $i]);
                 $this->doctrine->persist($team);
 
                 $teamGroupMembership = new TeamInGroup();

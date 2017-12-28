@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TeamInGame extends BaseEntity
 {
+    const RELATIONSHIP_HOME = 'home';
+    const RELATIONSHIP_HOST = 'host';
+    const RELATIONSHIP_REFEREE = 'referee';
+
     /**
      * @ORM\ManyToOne(targetEntity="App\Model\Team\Team", inversedBy="gameMemberships",fetch="EAGER")
      * @var Team
@@ -31,7 +35,7 @@ class TeamInGame extends BaseEntity
     protected $relationship;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      * @var bool
      */
     protected $rosterFilled;

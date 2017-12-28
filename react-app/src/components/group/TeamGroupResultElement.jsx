@@ -1,12 +1,12 @@
 import React from 'react';
 
 const TeamGroupResultElement = (props) => {
-    const {results} = props;
+    const {results, rank} = props;
 
     return (
         <tr>
-            <td>{results.rank}</td>
-            <td>{results.teamName}</td>
+            <td>{rank}</td>
+            <td>{results.team_name}</td>
             <td>{results.played}</td>
             <td>{results.wins}</td>
             <td>{results.ties}</td>

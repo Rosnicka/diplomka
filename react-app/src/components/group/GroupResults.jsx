@@ -5,6 +5,8 @@ import TeamGroupResultElement from "./TeamGroupResultElement";
 const GroupResults = (props) => {
     const {teamsResults} = props;
 
+    const sortedResults = [].concat(teamsResults).sort((a, b) => a.points > b.points);
+
     return (
         <Table striped bordered condensed hover>
             <thead>
@@ -20,8 +22,8 @@ const GroupResults = (props) => {
             </tr>
             </thead>
             <tbody>
-            {teamsResults.map((teamResults, index) => {
-                return <TeamGroupResultElement key={index} results={teamResults}/>
+            {sortedResults.map((teamResults, index) => {
+                return <TeamGroupResultElement key={index} rank={index + 1} results={teamResults}/>
             })}
             </tbody>
         </Table>

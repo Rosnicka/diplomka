@@ -9,6 +9,7 @@ import {
 } from "../../constants/Routes";
 import {fetchPost, fetchGet, fetchPut, fetchDelete} from "../../utils/FetchMethods";
 import {store} from "../../containers/DispatchingApp";
+import {loadGroupResults} from "../group/GroupActions";
 
 const receiveMyTeam = team => {
     return {
@@ -81,6 +82,7 @@ export const getMyTeam = (teamId) => dispatch => {
                 team = data.data;
             }
             dispatch(receiveMyTeam(team))
+            dispatch(loadGroupResults(team.group.id));
             dispatch(isFetchingTeam(false))
         });
     }).catch(function (error) {

@@ -37,7 +37,7 @@ const MyTeamHomePage = (props) => {
                 <div>
                     <Col xs={12}>
                         <h2>{myTeam.name}</h2>
-                        <strong>Sezóna Podzim 2017, 8F</strong>
+                        <strong>Sezóna {myTeam.competition.name}, {myTeam.league.level}{myTeam.group.letter}</strong>
                         <br/>
                     </Col>
                     <Col xs={12}>
