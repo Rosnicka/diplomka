@@ -5,7 +5,7 @@ import {Col, Row} from 'react-bootstrap'
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import GameDetailEventList from "../../components/game-detail/GameDetailEventList";
 import {
-    addElapsedSecond, addPlayerToGame, changeGameState, createEvent, removePlayerFromGame,
+    addElapsedSecond, addPlayerToGame, changeGameState, confirmRoster, createEvent, removePlayerFromGame,
     setLastStartGameTime
 } from "../../actions/game-detail/GameDetailActions";
 import GameDetailControls from "../../components/game-detail/GameDetailControls";
@@ -54,6 +54,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         onGameIntervalTick: () => {
             dispatch(addElapsedSecond());
+        },
+        onClickConfirmRoster: (gameId) => {
+            dispatch(confirmRoster(gameId));
         }
     };
 };
@@ -95,7 +98,7 @@ const GameDetailRepository = (props) => {
 
     return (
         <div>
-            <GameDetailControls {...props} />
+            <GameDetailControls {...props} isReferee={isReferee()} />
             <Col xs={12} className="game-detail">
                 <GameDetailHeader {...props}/>
                 <Row>

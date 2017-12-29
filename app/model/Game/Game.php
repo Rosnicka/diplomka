@@ -22,6 +22,9 @@ class Game extends BaseEntity
     const GAME_STATE_FINISHED = 'finished';
     const GAME_STATE_CLOSED = 'closed';
 
+    const POINTS_PER_WIN = 2;
+    const POINTS_PER_TIE = 1;
+
 
     /**
      * @ORM\Column(type="integer")

@@ -22,6 +22,10 @@ export const getGameByIdUrl = (gameId) => {
     return GAMES_URL + '/' + gameId;
 }
 
+export const getConfirmRoster = (gameId, teamId) => {
+    return getGameByIdUrl(gameId) + '/rosterConfirm/' + teamId;
+}
+
 export const getTeamByIdUrl = (teamId) => {
     return TEAMS_URL + '/' + teamId;
 }

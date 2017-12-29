@@ -7,6 +7,7 @@ use App\Model\Game\GameEvent;
 use App\Model\Player\Player;
 use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\Team\Team;
+use App\Model\TeamInGame\TeamInGame;
 use Doctrine\ORM\EntityManager;
 use Drahak\Restful\Application\UI\ResourcePresenter;
 
@@ -129,6 +130,38 @@ class GamePresenter extends ResourcePresenter
             $data[] = $gameEvent;
         }
         $this->resource->data = $data;
+    }
+
+    public function actionUpdateRosterConfirm()
+    {
+        $gameId = $this->getParameter('id');
+        $teamId = $this->getParameter('relationId');
+        $game = $this->doctrine->getRepository(Game::getClassName())->find($gameId);
+
+        /** @var TeamInGame $teamInGame */
+        $teamsInGame = $this->doctrine->getRepository(TeamInGame::getClassName())->findBy([
+            'game' => $game,
+        ]);
+
+        $countRosterFilled = 0;
+        foreach ($teamsInGame as $teamInGame) {
+            if ($teamInGame->team->id == $teamId) {
+                $teamInGame->setRosterFilled(true);
+                $this->doctrine->persist($teamInGame);
+            }
+
+            if ($teamInGame->rosterFilled === true) {
+                $countRosterFilled++;
+            }
+        }
+
+        if ($countRosterFilled === 2) {
+            $game->setState(Game::GAME_STATE_PREPARED);
+            $this->doctrine->persist($game);
+        }
+
+        $this->doctrine->flush();
+        $this->resource->data = [];
     }
 
     public function actionCreatePlayers()

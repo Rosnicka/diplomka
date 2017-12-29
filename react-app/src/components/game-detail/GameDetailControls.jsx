@@ -3,7 +3,7 @@ import {Col} from 'react-bootstrap'
 import {GAME_STATE_PAUSED, GAME_STATE_PLAYING, GAME_STATE_PREPARED} from "../../constants/GameStateTypes";
 
 const GameDetailControls = (props) => {
-    const {gameHeader, gameState, onClickStartGame, onClickPauseGame, onClickResumeGame, onClickEndGame} = props;
+    const {gameHeader, gameState, onClickStartGame, onClickPauseGame, onClickResumeGame, onClickEndGame, isReferee} = props;
 
     const btnStartGame = () => {
         if (gameState === GAME_STATE_PREPARED) {
@@ -43,6 +43,10 @@ const GameDetailControls = (props) => {
         } else {
             return '';
         }
+    }
+
+    if (!isReferee) {
+        return '';
     }
 
     return (

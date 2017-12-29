@@ -5,6 +5,8 @@ export const GAME_STATE_PAUSED = 'paused';
 export const GAME_STATE_FINISHED = 'finished';
 export const GAME_STATE_CLOSED = 'closed';
 
+export const ROSTER_CONFIRM_PLAYER_COUNT_LIMIT = 6;
+
 export const getGameStateLabel = (state) => {
     switch (state) {
         case GAME_STATE_FILLING_ROSTER:

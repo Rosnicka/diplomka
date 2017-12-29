@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Model\Application\Application;
 use App\Model\Game\Game;
 use App\Model\Group\Group;
 use App\Model\Team\Team;
@@ -50,13 +51,31 @@ class TeamPresenter extends ResourcePresenter
         if ($id !== null) {
             /** @var Team $team */
             $team = $this->doctrine->getRepository(Team::getClassName())->find($id);
+
+            /** @var TeamInGroup $teamInGroup */
             $teamInGroup = $this->doctrine->getRepository(TeamInGroup::getClassName())->findOneBy(['team' => $team]);
-            /** @var Group $group */
-            $group = $teamInGroup->group;
+
+            /** @var Application $application */
+            $application = $this->doctrine->getRepository(Application::getClassName())->findOneBy(['team' => $team]);
+
             $teamData = $team->getData();
-            $teamData['group'] = $group->toArray();
-            $teamData['league'] = $group->league->toArray();
-            $teamData['competition'] = $group->league->competition->toArray();
+            $teamData['group'] = null;
+            $teamData['league'] = null;
+            $teamData['competition'] = null;
+            $teamData['application'] = null;
+
+            if ($application) {
+                $teamData['application'] = $application->getData();
+            }
+
+            if ($teamInGroup) {
+                /** @var Group $group */
+                $group = $teamInGroup->group;
+                $teamData['group'] = $group->toArray();
+                $teamData['league'] = $group->league->toArray();
+                $teamData['competition'] = $group->league->competition->toArray();
+            }
+
             $this->resource->data = $teamData;
         } else {
             $teams = $this->doctrine->getRepository(Team::getClassName())->findAll();

@@ -17,7 +17,7 @@ const mapDispatchToProps = (dispatch) => {
 const GroupRepository = (props) => {
     const {myTeam, results} = props;
 
-    if (myTeam.group === undefined) {
+    if (myTeam.group === undefined || results === undefined || results.length === 0) {
         return (
             <LoadingSpinner text="Načítám tabulku výsledků"/>
         )

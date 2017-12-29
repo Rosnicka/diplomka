@@ -5,7 +5,7 @@ import TeamGroupResultElement from "./TeamGroupResultElement";
 const GroupResults = (props) => {
     const {teamsResults} = props;
 
-    const sortedResults = [].concat(teamsResults).sort((a, b) => a.points > b.points);
+    const sortedResults = [].concat(teamsResults).sort((a, b) => b.points > a.points);
 
     return (
         <Table striped bordered condensed hover>

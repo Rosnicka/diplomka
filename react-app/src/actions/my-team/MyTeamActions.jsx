@@ -82,7 +82,9 @@ export const getMyTeam = (teamId) => dispatch => {
                 team = data.data;
             }
             dispatch(receiveMyTeam(team))
-            dispatch(loadGroupResults(team.group.id));
+            if (team.group !== null) {
+                dispatch(loadGroupResults(team.group.id));
+            }
             dispatch(isFetchingTeam(false))
         });
     }).catch(function (error) {

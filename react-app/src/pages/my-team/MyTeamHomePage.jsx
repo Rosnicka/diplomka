@@ -29,6 +29,30 @@ const mapDispatchToProps = (dispatch) => {
 const MyTeamHomePage = (props) => {
     const {myTeam, onSubmitTeamRegistrationForm, onSubmitTeamApplicationForm, isFetchingTeam, fields, fieldLocations} = props;
 
+    const teamSeason = () => {
+        if (myTeam.competition === null || myTeam.league === null || myTeam.group === null) {
+            if (myTeam.application !== null) {
+                return (
+                    <div>
+                        Váš tým čeká na vyhodnocení registrací a zařazení do sezóny.
+                    </div>
+                )
+            } else {
+                return (
+                    <div>
+                        Váš tým se zatím neúčastní aktuální sezóny.
+                        {getTeamSeasonRegistration()}
+                    </div>
+                );
+            }
+        }
+        return (
+            <strong>
+                Sezóna {myTeam.competition.name}, {myTeam.league.level}{myTeam.group.letter}
+            </strong>
+        )
+    }
+
     const getTeamInfo = () => {
         if (myTeam.id === undefined) {
             return ''
@@ -37,16 +61,9 @@ const MyTeamHomePage = (props) => {
                 <div>
                     <Col xs={12}>
                         <h2>{myTeam.name}</h2>
-                        <strong>Sezóna {myTeam.competition.name}, {myTeam.league.level}{myTeam.group.letter}</strong>
+                        {teamSeason()}
                         <br/>
                     </Col>
-                    <Col xs={12}>
-                        Umístění v tabulkce: 2<br/>
-                        Odehrané zápasy: 5<br/>
-                        Nadcházející zápas: <a href="">{myTeam.name} : SK Slavia</a><br/>
-                        Nadcházející pískání: -
-                    </Col>
-
                 </div>
             )
         }
@@ -56,7 +73,9 @@ const MyTeamHomePage = (props) => {
         if (myTeam.id === undefined) {
             return (
                 <div>
-                    Ještě nemáš tým?
+                    <Col xs={12}>
+                        <h1>Ještě nemáš tým?</h1>
+                    </Col>
                     <TeamRegistrationForm onSubmit={onSubmitTeamRegistrationForm}/>
                 </div>
             )
@@ -65,30 +84,14 @@ const MyTeamHomePage = (props) => {
         }
     }
 
-    const getTeamSeasonInfo = () => {
-        if (myTeam.activeSeason === null) {
-            return ''
-        } else {
-            return (
-                <div>
-                    Team season info
-                </div>
-            )
-        }
-    }
-
     const getTeamSeasonRegistration = () => {
-        // if (myTeam.activeSeason === null) {
-        if (true) {
-            return (
-                <div>
-                    <TeamApplicationForm onSubmit={onSubmitTeamApplicationForm} fields={fields}
-                                         fieldLocations={fieldLocations} myTeamId={myTeam.id}/>
-                </div>
-            )
-        } else {
-            return ''
-        }
+        return (
+            <div>
+                <h2>Registrace týmu do sezóny</h2>
+                <TeamApplicationForm onSubmit={onSubmitTeamApplicationForm} fields={fields}
+                                     fieldLocations={fieldLocations} myTeamId={myTeam.id}/>
+            </div>
+        )
     }
 
     const getContent = () => {
@@ -101,9 +104,7 @@ const MyTeamHomePage = (props) => {
             return (
                 <div>
                     {getTeamInfo()}
-                    {/*{getTeamRegistration()}*/}
-                    {/*{getTeamSeasonInfo()}*/}
-                    {/*{getTeamSeasonRegistration()}*/}
+                    {getTeamRegistration()}
                 </div>
             )
         }

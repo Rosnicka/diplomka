@@ -79,14 +79,13 @@ class GroupPresenter extends ResourcePresenter
         }
 
         return [
-            'rank' => 11,
             'teamName' => $team->getName(),
             'played' => $played,
             'wins' => $wins,
             'ties' => $ties,
             'loses' => $loses,
             'score' => $goalsShooted . ':' . $goalsReceived,
-            'points' => 4,
+            'points' => $wins * Game::POINTS_PER_WIN + $ties * Game::POINTS_PER_TIE,
         ];
     }
 }

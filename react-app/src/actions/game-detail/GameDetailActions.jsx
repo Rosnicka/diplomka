@@ -1,4 +1,5 @@
 import {
+    getConfirmRoster,
     getGameByIdUrl, getGameEventsByGameId, getGamePlayersByGameIdUrl, getGameTeamPlayers, getRemovePlayerFromGameUrl
 } from "../../constants/Routes";
 import {
@@ -288,6 +289,21 @@ export const removePlayerFromGame = (playerId) => dispatch => {
                 } else {
                     dispatch(removeHostPlayer(playerId));
                 }
+            }
+        });
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+export const confirmRoster = (gameId) => dispatch => {
+    const state = store.getState();
+    const teamId = state.myTeam.myTeam.id;
+
+    fetchPut(getConfirmRoster(gameId, teamId), []).then((response) => {
+        response.json().then((data) => {
+            if (data.data !== true) {
+                //dispatch(receiveGameState(data.data.state));
             }
         });
     }).catch(function (error) {
