@@ -24,12 +24,16 @@ class AuthPresenter extends ResourcePresenter
         $authenticator = new AppAuthenticator($this->doctrine);
         $user->setAuthenticator($authenticator);
 
-        try {
-            $user->login($data['username'], $data['password']);
+        if (isset($data['username']) && isset($data['password'])) {
+            try {
+                $user->login($data['username'], $data['password']);
 
-            $this->resource->user = $user->getIdentity()->getData();
+                $this->resource->user = $user->getIdentity()->getData();
 
-        } catch (AuthenticationException $e) {
+            } catch (AuthenticationException $e) {
+                $this->resource->user = false;
+            }
+        } else {
             $this->resource->user = false;
         }
     }

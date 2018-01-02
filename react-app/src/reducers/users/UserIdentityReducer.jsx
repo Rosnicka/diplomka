@@ -1,5 +1,8 @@
 import {combineReducers} from 'redux'
-import {IS_FETCHING_USER, RECEIVE_LOGGED_USER} from "../../constants/UserActionTypes";
+import {
+    IS_FETCHING_USER, RECEIVE_LOGGED_USER, RECEIVE_USER_LOGIN_MSG,
+    RESET_USER_LOGIN_MSG
+} from "../../constants/UserActionTypes";
 
 const userIdentity = (state = {}, action) => {
     switch (action.type) {
@@ -19,9 +22,21 @@ const isFetchingUser = (state = true, action) => {
     }
 }
 
+const messageBox = (state = false, action) => {
+    switch (action.type) {
+        case RESET_USER_LOGIN_MSG:
+            return false;
+        case RECEIVE_USER_LOGIN_MSG:
+            return action.msg;
+        default:
+            return state;
+    }
+}
+
 const usersReducer = combineReducers({
     userIdentity,
-    isFetchingUser
+    isFetchingUser,
+    messageBox
 })
 
 export default usersReducer;

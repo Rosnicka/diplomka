@@ -1,8 +1,12 @@
-import {IS_FETCHING_USER, RECEIVE_LOGGED_USER} from "../../constants/UserActionTypes";
+import {
+    IS_FETCHING_USER, RECEIVE_LOGGED_USER, RECEIVE_USER_LOGIN_MSG,
+    RESET_USER_LOGIN_MSG
+} from "../../constants/UserActionTypes";
 import {fetchGet, fetchPost} from "../../utils/FetchMethods";
 import {LOGGED_USER_URL, LOGIN_USER_URL, REGISTER_USER_URL} from "../../constants/Routes";
 import {getMyGamesAsReferee, getMyGamesToPlay, getMyPlayers, getMyTeam, isFetchingTeam} from "../my-team/MyTeamActions";
 import {loadGroupResults} from "../group/GroupActions";
+import {ALERT_TYPE_DANGER} from "../../components/utils/AlertMessage";
 
 const receiveLoggedUser = user => {
     return {
@@ -15,6 +19,22 @@ const isFetchingUser = (isFetching) => {
     return {
         type: IS_FETCHING_USER,
         isFetching: isFetching,
+    }
+}
+
+const receiveLoginUserMsg = (type, text) => {
+    return {
+        type: RECEIVE_USER_LOGIN_MSG,
+        msg: {
+            type: type,
+            text: text
+        }
+    }
+}
+
+const resetLoginUserMsg = () => {
+    return {
+        type: RESET_USER_LOGIN_MSG
     }
 }
 
@@ -43,12 +63,15 @@ export const getLoggedUser = () => dispatch => {
 }
 
 export const loginUser = (username, password) => dispatch => {
+    dispatch(resetLoginUserMsg());
     fetchPost(LOGIN_USER_URL, {username, password}).then((response) => {
         response.json().then((data) => {
             let user = {};
             if (data.user !== false) {
                 user = data.user;
                 dispatch(receiveLoggedUser(user));
+            } else {
+                dispatch(receiveLoginUserMsg(ALERT_TYPE_DANGER, 'Přihlášení se nezdařilo.'));
             }
         });
     }).catch(function (error) {

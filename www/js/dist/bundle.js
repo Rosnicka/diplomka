@@ -10297,6 +10297,8 @@ var _MyTeamActions = __webpack_require__(111);
 
 var _GroupActions = __webpack_require__(112);
 
+var _AlertMessage = __webpack_require__(587);
+
 var receiveLoggedUser = function receiveLoggedUser(user) {
     return {
         type: _UserActionTypes.RECEIVE_LOGGED_USER,
@@ -10308,6 +10310,22 @@ var isFetchingUser = function isFetchingUser(isFetching) {
     return {
         type: _UserActionTypes.IS_FETCHING_USER,
         isFetching: isFetching
+    };
+};
+
+var receiveLoginUserMsg = function receiveLoginUserMsg(type, text) {
+    return {
+        type: _UserActionTypes.RECEIVE_USER_LOGIN_MSG,
+        msg: {
+            type: type,
+            text: text
+        }
+    };
+};
+
+var resetLoginUserMsg = function resetLoginUserMsg() {
+    return {
+        type: _UserActionTypes.RESET_USER_LOGIN_MSG
     };
 };
 
@@ -10338,12 +10356,15 @@ var getLoggedUser = exports.getLoggedUser = function getLoggedUser() {
 
 var loginUser = exports.loginUser = function loginUser(username, password) {
     return function (dispatch) {
+        dispatch(resetLoginUserMsg());
         (0, _FetchMethods.fetchPost)(_Routes.LOGIN_USER_URL, { username: username, password: password }).then(function (response) {
             response.json().then(function (data) {
                 var user = {};
                 if (data.user !== false) {
                     user = data.user;
                     dispatch(receiveLoggedUser(user));
+                } else {
+                    dispatch(receiveLoginUserMsg(_AlertMessage.ALERT_TYPE_DANGER, 'Přihlášení se nezdařilo.'));
                 }
             });
         }).catch(function (error) {
@@ -16180,6 +16201,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 var RECEIVE_LOGGED_USER = exports.RECEIVE_LOGGED_USER = 'RECEIVE_LOGGED_USER';
 var IS_FETCHING_USER = exports.IS_FETCHING_USER = 'IS_FETCHING_USER';
+var RECEIVE_USER_LOGIN_MSG = exports.RECEIVE_USER_LOGIN_MSG = 'RECEIVE_USER_LOGIN_MSG';
+var RESET_USER_LOGIN_MSG = exports.RESET_USER_LOGIN_MSG = 'RESET_USER_LOGIN_MSG';
 
 /***/ }),
 /* 188 */
@@ -59775,9 +59798,24 @@ var isFetchingUser = function isFetchingUser() {
     }
 };
 
+var messageBox = function messageBox() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _UserActionTypes.RESET_USER_LOGIN_MSG:
+            return false;
+        case _UserActionTypes.RECEIVE_USER_LOGIN_MSG:
+            return action.msg;
+        default:
+            return state;
+    }
+};
+
 var usersReducer = (0, _redux.combineReducers)({
     userIdentity: userIdentity,
-    isFetchingUser: isFetchingUser
+    isFetchingUser: isFetchingUser,
+    messageBox: messageBox
 });
 
 exports.default = usersReducer;
@@ -62599,11 +62637,15 @@ var _UsersActions = __webpack_require__(110);
 
 var _reactBootstrap = __webpack_require__(13);
 
+var _AlertMessage = __webpack_require__(587);
+
+var _AlertMessage2 = _interopRequireDefault(_AlertMessage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
-        userIdentity: state.userIdentity
+        userLoginMsg: state.users.messageBox
     };
 };
 
@@ -62616,8 +62658,17 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 var UserLoginPage = function UserLoginPage(props) {
-    var onSubmitLoginForm = props.onSubmitLoginForm;
+    var onSubmitLoginForm = props.onSubmitLoginForm,
+        userLoginMsg = props.userLoginMsg;
 
+
+    var renderMsgBox = function renderMsgBox() {
+        if (userLoginMsg === false) {
+            return '';
+        }
+
+        return _react2.default.createElement(_AlertMessage2.default, { type: userLoginMsg.type, text: userLoginMsg.text });
+    };
 
     return _react2.default.createElement(
         _reactBootstrap.Col,
@@ -62630,7 +62681,8 @@ var UserLoginPage = function UserLoginPage(props) {
         _react2.default.createElement(
             _reactBootstrap.Col,
             { xs: 8, xsOffset: 2 },
-            _react2.default.createElement(_LoginForm2.default, { onSubmitLoginForm: onSubmitLoginForm })
+            _react2.default.createElement(_LoginForm2.default, { onSubmitLoginForm: onSubmitLoginForm }),
+            renderMsgBox()
         )
     );
 };
@@ -67732,6 +67784,44 @@ var getFieldLocations = exports.getFieldLocations = function getFieldLocations()
         });
     };
 };
+
+/***/ }),
+/* 587 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ALERT_TYPE_INFO = exports.ALERT_TYPE_SUCCESS = exports.ALERT_TYPE_WARNING = exports.ALERT_TYPE_DANGER = undefined;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactBootstrap = __webpack_require__(13);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var AlertMessage = function AlertMessage(props) {
+    var type = props.type,
+        text = props.text;
+
+
+    return _react2.default.createElement(
+        _reactBootstrap.Alert,
+        { bsStyle: type },
+        text
+    );
+};
+
+exports.default = AlertMessage;
+var ALERT_TYPE_DANGER = exports.ALERT_TYPE_DANGER = 'danger';
+var ALERT_TYPE_WARNING = exports.ALERT_TYPE_WARNING = 'warning';
+var ALERT_TYPE_SUCCESS = exports.ALERT_TYPE_SUCCESS = 'success';
+var ALERT_TYPE_INFO = exports.ALERT_TYPE_INFO = 'info';
 
 /***/ })
 /******/ ]);
