@@ -7,7 +7,7 @@ import AlertMessage, {ALERT_TYPE_DANGER} from "../../components/utils/AlertMessa
 
 const mapStateToProps = (state) => {
     return {
-        userLoginMsg: state.users.messageBox
+        userLoginMsg: state.users.loginMessageBox
     }
 };
 

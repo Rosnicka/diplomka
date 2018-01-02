@@ -20,7 +20,7 @@ class RegistrationForm extends Component {
                             <Text className="form-control" field="last_name" id="last_name"/>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="email">Přihlašovací email</label>
+                            <label htmlFor="email">Přihlašovací e-mail</label>
                             <Text className="form-control" field="email" id="email"/>
                         </div>
                         <div className="form-group">

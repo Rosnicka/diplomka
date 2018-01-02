@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux'
 import {
-    IS_FETCHING_USER, RECEIVE_LOGGED_USER, RECEIVE_USER_LOGIN_MSG,
-    RESET_USER_LOGIN_MSG
+    IS_FETCHING_USER, RECEIVE_LOGGED_USER, RECEIVE_USER_LOGIN_MSG, RECEIVE_USER_REGISTER_MSG,
+    RESET_USER_LOGIN_MSG, RESET_USER_REGISTER_MSG
 } from "../../constants/UserActionTypes";
 
 const userIdentity = (state = {}, action) => {
@@ -22,7 +22,7 @@ const isFetchingUser = (state = true, action) => {
     }
 }
 
-const messageBox = (state = false, action) => {
+const loginMessageBox = (state = false, action) => {
     switch (action.type) {
         case RESET_USER_LOGIN_MSG:
             return false;
@@ -33,10 +33,22 @@ const messageBox = (state = false, action) => {
     }
 }
 
+const registerMessageBox = (state = false, action) => {
+    switch (action.type) {
+        case RESET_USER_REGISTER_MSG:
+            return false;
+        case RECEIVE_USER_REGISTER_MSG:
+            return action.msg;
+        default:
+            return state;
+    }
+}
+
 const usersReducer = combineReducers({
     userIdentity,
     isFetchingUser,
-    messageBox
+    loginMessageBox,
+    registerMessageBox
 })
 
 export default usersReducer;

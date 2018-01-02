@@ -10329,6 +10329,22 @@ var resetLoginUserMsg = function resetLoginUserMsg() {
     };
 };
 
+var receiveRegisterUserMsg = function receiveRegisterUserMsg(type, text) {
+    return {
+        type: _UserActionTypes.RECEIVE_USER_REGISTER_MSG,
+        msg: {
+            type: type,
+            text: text
+        }
+    };
+};
+
+var resetRegisterUserMsg = function resetRegisterUserMsg() {
+    return {
+        type: _UserActionTypes.RESET_USER_REGISTER_MSG
+    };
+};
+
 var getLoggedUser = exports.getLoggedUser = function getLoggedUser() {
     return function (dispatch) {
         (0, _FetchMethods.fetchGet)(_Routes.LOGGED_USER_URL).then(function (response) {
@@ -10375,9 +10391,14 @@ var loginUser = exports.loginUser = function loginUser(username, password) {
 
 var registerUser = exports.registerUser = function registerUser(values) {
     return function (dispatch) {
+        dispatch(resetRegisterUserMsg());
         (0, _FetchMethods.fetchPost)(_Routes.REGISTER_USER_URL, values).then(function (response) {
             response.json().then(function (data) {
-                console.log(data);
+                if (data.msg.success === true) {
+                    dispatch(receiveRegisterUserMsg(_AlertMessage.ALERT_TYPE_SUCCESS, data.msg.text));
+                } else {
+                    dispatch(receiveRegisterUserMsg(_AlertMessage.ALERT_TYPE_DANGER, data.msg.text));
+                }
             });
         }).catch(function (error) {
             console.log(error);
@@ -16203,6 +16224,8 @@ var RECEIVE_LOGGED_USER = exports.RECEIVE_LOGGED_USER = 'RECEIVE_LOGGED_USER';
 var IS_FETCHING_USER = exports.IS_FETCHING_USER = 'IS_FETCHING_USER';
 var RECEIVE_USER_LOGIN_MSG = exports.RECEIVE_USER_LOGIN_MSG = 'RECEIVE_USER_LOGIN_MSG';
 var RESET_USER_LOGIN_MSG = exports.RESET_USER_LOGIN_MSG = 'RESET_USER_LOGIN_MSG';
+var RESET_USER_REGISTER_MSG = exports.RESET_USER_REGISTER_MSG = 'RESET_USER_REGISTER_MSG';
+var RECEIVE_USER_REGISTER_MSG = exports.RECEIVE_USER_REGISTER_MSG = 'RECEIVE_USER_REGISTER_MSG';
 
 /***/ }),
 /* 188 */
@@ -59798,7 +59821,7 @@ var isFetchingUser = function isFetchingUser() {
     }
 };
 
-var messageBox = function messageBox() {
+var loginMessageBox = function loginMessageBox() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     var action = arguments[1];
 
@@ -59812,10 +59835,25 @@ var messageBox = function messageBox() {
     }
 };
 
+var registerMessageBox = function registerMessageBox() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _UserActionTypes.RESET_USER_REGISTER_MSG:
+            return false;
+        case _UserActionTypes.RECEIVE_USER_REGISTER_MSG:
+            return action.msg;
+        default:
+            return state;
+    }
+};
+
 var usersReducer = (0, _redux.combineReducers)({
     userIdentity: userIdentity,
     isFetchingUser: isFetchingUser,
-    messageBox: messageBox
+    loginMessageBox: loginMessageBox,
+    registerMessageBox: registerMessageBox
 });
 
 exports.default = usersReducer;
@@ -62645,7 +62683,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
-        userLoginMsg: state.users.messageBox
+        userLoginMsg: state.users.loginMessageBox
     };
 };
 
@@ -62750,7 +62788,7 @@ var LoginForm = function (_Component) {
                             _react2.default.createElement(
                                 'label',
                                 { htmlFor: 'username' },
-                                'P\u0159ihla\u0161ovac\xED email'
+                                'P\u0159ihla\u0161ovac\xED e-mail'
                             ),
                             _react2.default.createElement(_reactForm.Text, { className: 'form-control', field: 'username', id: 'username' })
                         ),
@@ -64396,10 +64434,16 @@ var _RegistrationForm2 = _interopRequireDefault(_RegistrationForm);
 
 var _reactBootstrap = __webpack_require__(13);
 
+var _AlertMessage = __webpack_require__(587);
+
+var _AlertMessage2 = _interopRequireDefault(_AlertMessage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
-    return {};
+    return {
+        registerMessageBox: state.users.registerMessageBox
+    };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
@@ -64411,8 +64455,17 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 var UserRegistrationPage = function UserRegistrationPage(props) {
-    var onSubmitRegistrationForm = props.onSubmitRegistrationForm;
+    var registerMessageBox = props.registerMessageBox,
+        onSubmitRegistrationForm = props.onSubmitRegistrationForm;
 
+
+    var renderMsgBox = function renderMsgBox() {
+        if (registerMessageBox === false) {
+            return '';
+        }
+
+        return _react2.default.createElement(_AlertMessage2.default, { type: registerMessageBox.type, text: registerMessageBox.text });
+    };
 
     return _react2.default.createElement(
         _reactBootstrap.Col,
@@ -64425,7 +64478,8 @@ var UserRegistrationPage = function UserRegistrationPage(props) {
         _react2.default.createElement(
             _reactBootstrap.Col,
             { xs: 8, xsOffset: 2 },
-            _react2.default.createElement(_RegistrationForm2.default, { onSubmitRegistrationForm: onSubmitRegistrationForm })
+            _react2.default.createElement(_RegistrationForm2.default, { onSubmitRegistrationForm: onSubmitRegistrationForm }),
+            renderMsgBox()
         )
     );
 };
@@ -64513,7 +64567,7 @@ var RegistrationForm = function (_Component) {
                             _react2.default.createElement(
                                 'label',
                                 { htmlFor: 'email' },
-                                'P\u0159ihla\u0161ovac\xED email'
+                                'P\u0159ihla\u0161ovac\xED e-mail'
                             ),
                             _react2.default.createElement(_reactForm.Text, { className: 'form-control', field: 'email', id: 'email' })
                         ),

@@ -12,7 +12,7 @@ class LoginForm extends Component {
                 {formApi => (
                     <form onSubmit={formApi.submitForm} id="login-form">
                         <div className="form-group">
-                            <label htmlFor="username">Přihlašovací email</label>
+                            <label htmlFor="username">Přihlašovací e-mail</label>
                             <Text className="form-control" field="username" id="username"/>
                         </div>
                         <div className="form-group">
