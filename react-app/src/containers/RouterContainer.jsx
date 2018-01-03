@@ -11,6 +11,7 @@ const mapStateToProps = (state) => {
     return {
         userIdentity: state.users.userIdentity,
         isFetchingUser: state.users.isFetchingUser,
+        myTeam: state.myTeam.myTeam
     }
 };
 
@@ -46,7 +47,7 @@ const RouterContainer = (props) => {
                 </BrowserRouter>
             )
         } else {
-            return <AuthRouter/>
+            return <AuthRouter {...props}/>
         }
     }
 

@@ -7,9 +7,11 @@ use App\Model\Game\GameEvent;
 use App\Model\PlayerInGame\PlayerInGame;
 use App\Model\Team\Team;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="birthNumber", columns={"birth_number"})})
  */
 class Player extends BaseEntity
 {

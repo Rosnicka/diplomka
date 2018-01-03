@@ -10378,7 +10378,7 @@ var loginUser = exports.loginUser = function loginUser(username, password) {
                 var user = {};
                 if (data.user !== false) {
                     user = data.user;
-                    dispatch(receiveLoggedUser(user));
+                    dispatch(getLoggedUser(user));
                 } else {
                     dispatch(receiveLoginUserMsg(_AlertMessage.ALERT_TYPE_DANGER, 'Přihlášení se nezdařilo.'));
                 }
@@ -10427,6 +10427,8 @@ var _FetchMethods = __webpack_require__(43);
 var _DispatchingApp = __webpack_require__(48);
 
 var _GroupActions = __webpack_require__(112);
+
+var _AlertMessage = __webpack_require__(587);
 
 var receiveMyTeam = function receiveMyTeam(team) {
     return {
@@ -10481,6 +10483,22 @@ var receiveMyTeamApplication = function receiveMyTeamApplication(application) {
     return {
         type: _MyTeamActionTypes.RECEIVE_MY_TEAM_APPLICATION,
         application: application
+    };
+};
+
+var receivePlayerFormMsg = function receivePlayerFormMsg(type, text) {
+    return {
+        type: _MyTeamActionTypes.RECEIVE_PLAYER_FORM_MSG,
+        msg: {
+            type: type,
+            text: text
+        }
+    };
+};
+
+var resetPlayerFormMsg = function resetPlayerFormMsg() {
+    return {
+        type: _MyTeamActionTypes.RESET_PLAYER_FORM_MSG
     };
 };
 
@@ -10568,8 +10586,11 @@ var createPlayer = exports.createPlayer = function createPlayer(values) {
         values['team'] = state.myTeam.myTeam.id;
         (0, _FetchMethods.fetchPost)(_Routes.PLAYERS_URL, values).then(function (response) {
             response.json().then(function (data) {
-                if (data.data !== false) {
-                    dispatch(receiveNewPlayer(data.data));
+                if (data.msg.success === true) {
+                    dispatch(receiveNewPlayer(data.msg.data));
+                    dispatch(receivePlayerFormMsg(_AlertMessage.ALERT_TYPE_SUCCESS, data.msg.text));
+                } else {
+                    dispatch(receivePlayerFormMsg(_AlertMessage.ALERT_TYPE_DANGER, data.msg.text));
                 }
             });
         }).catch(function (error) {
@@ -10596,8 +10617,11 @@ var updatePlayer = exports.updatePlayer = function updatePlayer(id, values) {
     return function (dispatch) {
         (0, _FetchMethods.fetchPut)(_Routes.PLAYERS_URL + '/' + id, values).then(function (response) {
             response.json().then(function (data) {
-                if (data.data !== false) {
-                    dispatch(receiveUpdatedPlayer(data.data));
+                if (data.msg.success === true) {
+                    dispatch(receiveUpdatedPlayer(data.msg.data));
+                    dispatch(receivePlayerFormMsg(_AlertMessage.ALERT_TYPE_SUCCESS, data.msg.text));
+                } else {
+                    dispatch(receivePlayerFormMsg(_AlertMessage.ALERT_TYPE_DANGER, data.msg.text));
                 }
             });
         }).catch(function (error) {
@@ -16245,6 +16269,8 @@ var RECEIVE_MY_PLAYERS = exports.RECEIVE_MY_PLAYERS = 'RECEIVE_MY_PLAYERS';
 var RECEIVE_NEW_PLAYER = exports.RECEIVE_NEW_PLAYER = 'RECEIVE_NEW_PLAYER';
 var RECEIVE_UPDATED_PLAYER = exports.RECEIVE_UPDATED_PLAYER = 'RECEIVE_UPDATED_PLAYER';
 var REMOVE_PLAYER = exports.REMOVE_PLAYER = 'REMOVE_PLAYER';
+var RECEIVE_PLAYER_FORM_MSG = exports.RECEIVE_PLAYER_FORM_MSG = 'RECEIVE_PLAYER_FORM_MSG';
+var RESET_PLAYER_FORM_MSG = exports.RESET_PLAYER_FORM_MSG = 'RESET_PLAYER_FORM_MSG';
 
 var IS_FETCHING_TEAM = exports.IS_FETCHING_TEAM = 'IS_FETCHING_TEAM';
 
@@ -59933,6 +59959,20 @@ var myPlayers = function myPlayers() {
     }
 };
 
+var myPlayersMessageBox = function myPlayersMessageBox() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case _MyTeamActionTypes.RESET_PLAYER_FORM_MSG:
+            return false;
+        case _MyTeamActionTypes.RECEIVE_PLAYER_FORM_MSG:
+            return action.msg;
+        default:
+            return state;
+    }
+};
+
 var myTeamApplication = function myTeamApplication() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var action = arguments[1];
@@ -59963,7 +60003,8 @@ var myTeamReducer = (0, _redux.combineReducers)({
     isFetchingTeam: isFetchingTeam,
     myTeamApplication: myTeamApplication,
     myGamesToPlay: myGamesToPlay,
-    myGamesAsReferee: myGamesAsReferee
+    myGamesAsReferee: myGamesAsReferee,
+    myPlayersMessageBox: myPlayersMessageBox
 });
 
 exports.default = myTeamReducer;
@@ -60232,7 +60273,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mapStateToProps = function mapStateToProps(state) {
     return {
         userIdentity: state.users.userIdentity,
-        isFetchingUser: state.users.isFetchingUser
+        isFetchingUser: state.users.isFetchingUser,
+        myTeam: state.myTeam.myTeam
     };
 };
 
@@ -60270,7 +60312,7 @@ var RouterContainer = function RouterContainer(props) {
                 )
             );
         } else {
-            return _react2.default.createElement(_AuthRouter2.default, null);
+            return _react2.default.createElement(_AuthRouter2.default, props);
         }
     };
 
@@ -64617,8 +64659,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -64651,27 +64691,15 @@ var _GroupTablePage2 = _interopRequireDefault(_GroupTablePage);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var AuthRouter = function AuthRouter(props) {
+    var myTeam = props.myTeam;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var AuthRouter = function (_Component) {
-    _inherits(AuthRouter, _Component);
-
-    function AuthRouter() {
-        _classCallCheck(this, AuthRouter);
-
-        return _possibleConstructorReturn(this, (AuthRouter.__proto__ || Object.getPrototypeOf(AuthRouter)).apply(this, arguments));
-    }
-
-    _createClass(AuthRouter, [{
-        key: 'render',
-        value: function render() {
+    var renderBrowserRouter = function renderBrowserRouter() {
+        if (myTeam.id === undefined) {
             return _react2.default.createElement(
                 _reactRouterDom.BrowserRouter,
-                { onChange: this.onRouteChanged },
+                null,
                 _react2.default.createElement(
                     'div',
                     null,
@@ -64680,7 +64708,73 @@ var AuthRouter = function (_Component) {
                         { bsStyle: 'pills' },
                         _react2.default.createElement(
                             _reactRouterBootstrap.LinkContainer,
-                            { to: '/' },
+                            { exact: true, to: '/' },
+                            _react2.default.createElement(
+                                _reactBootstrap.NavItem,
+                                { eventKey: 1 },
+                                'M\u016Fj t\xFDm'
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _reactRouterDom.Switch,
+                        null,
+                        _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _MyTeamHomePage2.default })
+                    )
+                )
+            );
+        } else if (myTeam.competition === null || myTeam.league === null || myTeam.group === null || myTeam.competition === undefined || myTeam.league === undefined || myTeam.group === undefined) {
+            return _react2.default.createElement(
+                _reactRouterDom.BrowserRouter,
+                null,
+                _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        _reactBootstrap.Nav,
+                        { bsStyle: 'pills' },
+                        _react2.default.createElement(
+                            _reactRouterBootstrap.LinkContainer,
+                            { exact: true, to: '/' },
+                            _react2.default.createElement(
+                                _reactBootstrap.NavItem,
+                                { eventKey: 1 },
+                                'M\u016Fj t\xFDm'
+                            )
+                        ),
+                        _react2.default.createElement(
+                            _reactRouterBootstrap.LinkContainer,
+                            { to: '/hraci' },
+                            _react2.default.createElement(
+                                _reactBootstrap.NavItem,
+                                { eventKey: 2 },
+                                'Hr\xE1\u010Di'
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _reactRouterDom.Switch,
+                        null,
+                        _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _MyTeamHomePage2.default }),
+                        _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/hraci', component: _PlayerRepository2.default }),
+                        _react2.default.createElement(_reactRouterDom.Route, { path: '/hraci/novy-hrac', component: _PlayerRepository2.default }),
+                        _react2.default.createElement(_reactRouterDom.Route, { path: '/hraci/:id', component: _PlayerRepository2.default })
+                    )
+                )
+            );
+        } else {
+            return _react2.default.createElement(
+                _reactRouterDom.BrowserRouter,
+                null,
+                _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        _reactBootstrap.Nav,
+                        { bsStyle: 'pills' },
+                        _react2.default.createElement(
+                            _reactRouterBootstrap.LinkContainer,
+                            { exact: true, to: '/' },
                             _react2.default.createElement(
                                 _reactBootstrap.NavItem,
                                 { eventKey: 1 },
@@ -64729,10 +64823,10 @@ var AuthRouter = function (_Component) {
                 )
             );
         }
-    }]);
+    };
 
-    return AuthRouter;
-}(_react.Component);
+    return renderBrowserRouter();
+};
 
 exports.default = AuthRouter;
 
@@ -64755,6 +64849,8 @@ var _reactRedux = __webpack_require__(24);
 
 var _reactRouter = __webpack_require__(558);
 
+var _reactBootstrap = __webpack_require__(13);
+
 var _PlayerForm = __webpack_require__(559);
 
 var _PlayerForm2 = _interopRequireDefault(_PlayerForm);
@@ -64767,11 +64863,16 @@ var _reactRouterBootstrap = __webpack_require__(45);
 
 var _MyTeamActions = __webpack_require__(111);
 
+var _AlertMessage = __webpack_require__(587);
+
+var _AlertMessage2 = _interopRequireDefault(_AlertMessage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
     return {
-        players: state.myTeam.myPlayers
+        players: state.myTeam.myPlayers,
+        playerMsg: state.myTeam.myPlayersMessageBox
     };
 };
 
@@ -64792,7 +64893,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 var PlayerRepository = function PlayerRepository(props) {
-    var players = props.players,
+    var playerMsg = props.playerMsg,
+        players = props.players,
         match = props.match,
         onSubmitNewPlayerForm = props.onSubmitNewPlayerForm,
         onSubmitEditPlayerForm = props.onSubmitEditPlayerForm,
@@ -64894,12 +64996,25 @@ var PlayerRepository = function PlayerRepository(props) {
         return '';
     };
 
+    var renderMsgBox = function renderMsgBox() {
+        if (playerMsg === false) {
+            return '';
+        }
+
+        return _react2.default.createElement(
+            _reactBootstrap.Col,
+            { xs: 12 },
+            _react2.default.createElement(_AlertMessage2.default, { type: playerMsg.type, text: playerMsg.text })
+        );
+    };
+
     return _react2.default.createElement(
         'div',
         null,
         renderRegisterNewPlayerForm(),
         renderEditPlayerForm(),
-        renderPlayersList()
+        renderPlayersList(),
+        renderMsgBox()
     );
 };
 
@@ -65347,8 +65462,8 @@ var MyTeamHomePage = function MyTeamHomePage(props) {
 
 
     var teamSeason = function teamSeason() {
-        if (myTeam.competition === null || myTeam.league === null || myTeam.group === null) {
-            if (myTeam.application !== null) {
+        if (myTeam.competition === null || myTeam.league === null || myTeam.group === null || myTeam.competition === undefined || myTeam.league === undefined || myTeam.group === undefined) {
+            if (myTeam.application !== null && myTeam.application !== undefined) {
                 return _react2.default.createElement(
                     'div',
                     null,

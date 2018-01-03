@@ -85,7 +85,7 @@ export const loginUser = (username, password) => dispatch => {
             let user = {};
             if (data.user !== false) {
                 user = data.user;
-                dispatch(receiveLoggedUser(user));
+                dispatch(getLoggedUser(user));
             } else {
                 dispatch(receiveLoginUserMsg(ALERT_TYPE_DANGER, 'Přihlášení se nezdařilo.'));
             }

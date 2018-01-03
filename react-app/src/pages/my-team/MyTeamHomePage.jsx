@@ -30,8 +30,10 @@ const MyTeamHomePage = (props) => {
     const {myTeam, onSubmitTeamRegistrationForm, onSubmitTeamApplicationForm, isFetchingTeam, fields, fieldLocations} = props;
 
     const teamSeason = () => {
-        if (myTeam.competition === null || myTeam.league === null || myTeam.group === null) {
-            if (myTeam.application !== null) {
+        if (myTeam.competition === null || myTeam.league === null || myTeam.group === null ||
+            myTeam.competition === undefined || myTeam.league === undefined || myTeam.group === undefined) {
+            if (myTeam.application !== null &&
+                myTeam.application !== undefined) {
                 return (
                     <div>
                         Váš tým čeká na vyhodnocení registrací a zařazení do sezóny.

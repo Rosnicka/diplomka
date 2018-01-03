@@ -1,7 +1,8 @@
 import {combineReducers} from 'redux'
 import {
     IS_FETCHING_TEAM, RECEIVE_MY_TEAM, RECEIVE_MY_PLAYERS, RECEIVE_MY_TEAM_APPLICATION, RECEIVE_NEW_PLAYER,
-    RECEIVE_UPDATED_PLAYER, REMOVE_PLAYER, RECEIVE_MY_GAMES_TO_PLAY, RECEIVE_MY_GAMES_AS_REFEREE
+    RECEIVE_UPDATED_PLAYER, REMOVE_PLAYER, RECEIVE_MY_GAMES_TO_PLAY, RECEIVE_MY_GAMES_AS_REFEREE, RESET_PLAYER_FORM_MSG,
+    RECEIVE_PLAYER_FORM_MSG
 } from "../../constants/MyTeamActionTypes";
 
 const myTeam = (state = {}, action) => {
@@ -51,6 +52,17 @@ const myPlayers = (state = [], action) => {
     }
 };
 
+const myPlayersMessageBox = (state = false, action) => {
+    switch (action.type) {
+        case RESET_PLAYER_FORM_MSG:
+            return false;
+        case RECEIVE_PLAYER_FORM_MSG:
+            return action.msg;
+        default:
+            return state;
+    }
+}
+
 const myTeamApplication = (state = {}, action) => {
     switch (action.type) {
         case RECEIVE_MY_TEAM_APPLICATION:
@@ -75,7 +87,8 @@ const myTeamReducer = combineReducers({
     isFetchingTeam,
     myTeamApplication,
     myGamesToPlay,
-    myGamesAsReferee
+    myGamesAsReferee,
+    myPlayersMessageBox
 });
 
 export default myTeamReducer;

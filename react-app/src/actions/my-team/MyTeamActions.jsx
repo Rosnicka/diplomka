@@ -1,6 +1,7 @@
 import {
     IS_FETCHING_TEAM, RECEIVE_MY_GAMES_AS_REFEREE, RECEIVE_MY_GAMES_TO_PLAY, RECEIVE_MY_PLAYERS, RECEIVE_MY_TEAM,
-    RECEIVE_MY_TEAM_APPLICATION, RECEIVE_NEW_PLAYER, RECEIVE_UPDATED_PLAYER, REMOVE_PLAYER
+    RECEIVE_MY_TEAM_APPLICATION, RECEIVE_NEW_PLAYER, RECEIVE_PLAYER_FORM_MSG, RECEIVE_UPDATED_PLAYER, REMOVE_PLAYER,
+    RESET_PLAYER_FORM_MSG
 } from "../../constants/MyTeamActionTypes";
 import {
     APPLICATIONS_URL, getTeamByIdUrl,
@@ -10,6 +11,7 @@ import {
 import {fetchPost, fetchGet, fetchPut, fetchDelete} from "../../utils/FetchMethods";
 import {store} from "../../containers/DispatchingApp";
 import {loadGroupResults} from "../group/GroupActions";
+import {ALERT_TYPE_DANGER, ALERT_TYPE_SUCCESS} from "../../components/utils/AlertMessage";
 
 const receiveMyTeam = team => {
     return {
@@ -64,6 +66,22 @@ const receiveMyTeamApplication = application => {
     return {
         type: RECEIVE_MY_TEAM_APPLICATION,
         application: application
+    }
+}
+
+const receivePlayerFormMsg = (type, text) => {
+    return {
+        type: RECEIVE_PLAYER_FORM_MSG,
+        msg: {
+            type: type,
+            text: text
+        }
+    }
+}
+
+const resetPlayerFormMsg = () => {
+    return {
+        type: RESET_PLAYER_FORM_MSG
     }
 }
 
@@ -142,8 +160,11 @@ export const createPlayer = (values) => dispatch => {
     values['team'] = state.myTeam.myTeam.id;
     fetchPost(PLAYERS_URL, values).then((response) => {
         response.json().then((data) => {
-            if (data.data !== false) {
-                dispatch(receiveNewPlayer(data.data))
+            if (data.msg.success === true) {
+                dispatch(receiveNewPlayer(data.msg.data));
+                dispatch(receivePlayerFormMsg(ALERT_TYPE_SUCCESS, data.msg.text));
+            } else {
+                dispatch(receivePlayerFormMsg(ALERT_TYPE_DANGER, data.msg.text));
             }
         });
     }).catch(function (error) {
@@ -166,8 +187,11 @@ export const deletePlayer = (id) => dispatch => {
 export const updatePlayer = (id, values) => dispatch => {
     fetchPut(PLAYERS_URL + '/' + id, values).then((response) => {
         response.json().then((data) => {
-            if (data.data !== false) {
-                dispatch(receiveUpdatedPlayer(data.data))
+            if (data.msg.success === true) {
+                dispatch(receiveUpdatedPlayer(data.msg.data));
+                dispatch(receivePlayerFormMsg(ALERT_TYPE_SUCCESS, data.msg.text));
+            } else {
+                dispatch(receivePlayerFormMsg(ALERT_TYPE_DANGER, data.msg.text));
             }
         });
     }).catch(function (error) {

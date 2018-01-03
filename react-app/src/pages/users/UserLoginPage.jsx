@@ -2,8 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import LoginForm from "../../forms/LoginForm";
 import {loginUser} from "../../actions/users/UsersActions";
-import {Col, Row} from 'react-bootstrap'
-import AlertMessage, {ALERT_TYPE_DANGER} from "../../components/utils/AlertMessage";
+import {Col} from 'react-bootstrap'
+import AlertMessage from "../../components/utils/AlertMessage";
 
 const mapStateToProps = (state) => {
     return {

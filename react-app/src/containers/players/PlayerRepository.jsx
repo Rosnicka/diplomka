@@ -1,15 +1,18 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router'
+import {Col} from 'react-bootstrap'
 
 import PlayerForm from "../../forms/PlayerForm";
 import PlayerList from "../../components/player/PlayerList";
 import {LinkContainer} from 'react-router-bootstrap';
 import {createPlayer, deletePlayer, updatePlayer} from "../../actions/my-team/MyTeamActions";
+import AlertMessage from "../../components/utils/AlertMessage";
 
 const mapStateToProps = (state) => {
     return {
-        players: state.myTeam.myPlayers
+        players: state.myTeam.myPlayers,
+        playerMsg: state.myTeam.myPlayersMessageBox
     }
 };
 
@@ -30,7 +33,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const PlayerRepository = (props) => {
-    const {players, match, onSubmitNewPlayerForm, onSubmitEditPlayerForm, onDeletePlayer} = props;
+    const {playerMsg, players, match, onSubmitNewPlayerForm, onSubmitEditPlayerForm, onDeletePlayer} = props;
 
     const findPlayer = (id) => {
         if (id === undefined) {
@@ -100,11 +103,24 @@ const PlayerRepository = (props) => {
         return '';
     };
 
+    const renderMsgBox = () => {
+        if (playerMsg === false) {
+            return '';
+        }
+
+        return (
+            <Col xs={12}>
+                <AlertMessage type={playerMsg.type} text={playerMsg.text}/>
+            </Col>
+        )
+    }
+
     return (
         <div>
             {renderRegisterNewPlayerForm()}
             {renderEditPlayerForm()}
             {renderPlayersList()}
+            {renderMsgBox()}
         </div>
     )
 };
