@@ -14,7 +14,6 @@ class PlayerList extends Component {
                         <th>Jméno</th>
                         <th>Příjmení</th>
                         <th>Rodné číslo</th>
-                        <th>Góly</th>
                         <th>Akce</th>
                     </tr>
                 </thead>

@@ -17,7 +17,6 @@ const PlayerListElement = (props) => {
             <td>{player.first_name}</td>
             <td>{player.last_name}</td>
             <td>{player.birth_number}</td>
-            <td>{Math.floor((Math.random() * 10) + 1)}</td>
             <td>
                 <LinkContainer to={'/hraci/' + player.id}>
                     <button className="btn btn-info btn-sm">Editovat</button>

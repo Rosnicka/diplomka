@@ -11,6 +11,19 @@ header {
   }
 }
 
+ul {
+  &.nav.nav-pills {
+    margin-bottom: 10px;
+
+    li {
+      width: 22%;
+      text-align: center;
+      border: 1px solid #337ab7;
+      border-radius: 5px;
+    }
+  }
+}
+
 .main-navigation {
   font-size: 22px;
 }
@@ -31,6 +44,10 @@ header {
 body {
   position: relative;
   height: 100%;
+}
+
+#tracy-debug {
+  display: none;
 }
 
 @import "components/game-detail";

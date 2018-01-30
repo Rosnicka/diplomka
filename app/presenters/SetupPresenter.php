@@ -125,7 +125,7 @@ class SetupPresenter extends Nette\Application\UI\Presenter
             'Canary FC',
         ];
         $league = $this->doctrine->getRepository(League::getClassName())->findOneBy([
-            'level' => 8,
+            'level' => 1,
         ]);
 
         $x = 0;
